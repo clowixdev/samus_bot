@@ -1,0 +1,8 @@
+# Folders
+__pycache__/
+
+# Files
+config.env
+database/database.db
+*.lock
+*.jpg
