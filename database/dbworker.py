@@ -71,7 +71,7 @@ def add_rr_name(user_id: int, username:str, ingame_name: str, engine: Engine) ->
     try:
         user = session.query(User).filter_by(id=user_id).first()
         if user:
-            user = User(id=user_id, username=username, rr_name=ingame_name)
+            user.rr_name = ingame_name
             session.add(user)
         session.commit()
     except BaseException as e:
