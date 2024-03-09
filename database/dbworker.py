@@ -82,6 +82,28 @@ def add_rr_name(user_id: int, username:str, ingame_name: str, engine: Engine) ->
     finally:
         session.close()
 
+def get_usernames(engine: Engine) -> list:
+    """Generates list of all usernames and returns it
+
+    Args:
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+
+    Returns:
+        list: List of all users stored in database
+    """
+    session = create_session(engine)
+    usernames = []
+    try:
+        all_users = session.execute(select(User).order_by(User.id)).all()
+        for user in all_users:
+            usernames.append(user[0].username)
+    except Exception as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
+    return usernames
 
 def gen_users(engine: Engine) -> list:
     """Generates list of all users and returns it
@@ -97,7 +119,7 @@ def gen_users(engine: Engine) -> list:
     try:
         all_users = session.execute(select(User).order_by(User.id)).all()
         for user in all_users:
-            users.append(user[0].username)
+            users += user
     except Exception as e:
         print(e)
         session.rollback()

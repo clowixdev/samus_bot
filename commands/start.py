@@ -1,7 +1,7 @@
 from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 from database.msg_templates import REPLIES
-from database.dbworker import get_user, gen_users, add_rr_name, update_templates, get_templates, delete_template
+from database.dbworker import get_user, gen_users, add_rr_name, update_templates, get_templates, delete_template, get_usernames
 
 from loader import bot, engine, dev_id, leader_id, secret_word
 
@@ -48,6 +48,18 @@ def stop_talking(message: Message) -> bool:
         return True
     return False
 
+def in_group(message: Message) -> bool:
+    """Function that tells you whether bot called in group or not
+
+    Args:
+        message (Message): Object, that contains information of received message
+
+    Returns:
+        bool: Returns true if bot command was triggered in group else false
+    """
+    if message.from_user.id == message.chat.id:
+        return False
+    return True
 
 @bot.message_handler(commands=['start'])
 def start_command(message: Message)-> None:
@@ -56,6 +68,10 @@ def start_command(message: Message)-> None:
     Args:
         message (Message): Object, that contains information of received message
     """
+
+    if in_group(message):
+        return
+
     bot.reply_to(message, REPLIES['start'])
     curr_user_rr_name = get_user(message.from_user.id, message.from_user.username, engine)
     if curr_user_rr_name == '':
@@ -65,7 +81,7 @@ def start_command(message: Message)-> None:
         bot.reply_to(message, REPLIES['logged'].format(rr_name=curr_user_rr_name))
         bot.reply_to(message, REPLIES['commands'])
 
-    print(message.from_user.id, message.from_user.username, message.chat.id)
+    print("{username} with id {id} called '/start' in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
 
 
 def register_user(message: Message) -> None:
@@ -112,8 +128,7 @@ def handle_all(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
-    if stop_talking(message):
+    if in_group(message):
         return
     
     if message.from_user.id in DEVS:
@@ -122,6 +137,8 @@ def handle_all(message: Message) -> None:
         bot.register_next_step_handler(message, choose_template)
     else:
         print("Permission error")
+
+    print("{username} with id {id} called '/all' in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
 
 
 def choose_template(message: Message) -> None:
@@ -158,8 +175,14 @@ def handle_new(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
+
+    if in_group(message):
+        return
+
     bot.reply_to(message, REPLIES['add_template'])
     bot.register_next_step_handler(message, add_template)
+
+    print("{username} with id {id} called '/new' in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
 
 
 def add_template(message: Message) -> None:
@@ -168,6 +191,10 @@ def add_template(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
+
+    if stop_talking(message):
+        return
+    
     user_template = ''
 
     for word in str.split(message.text):
@@ -202,9 +229,15 @@ def handle_del(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
+
+    if in_group(message):
+        return
+
     bot.reply_to(message, gen_templates())
     bot.reply_to(message, REPLIES['del_template'])
     bot.register_next_step_handler(message, del_template)
+
+    print("{username} with id {id} called '/del' in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
 
 
 def del_template(message: Message) -> None:
@@ -213,6 +246,10 @@ def del_template(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
+
+    if stop_talking(message):
+        return
+
     try:
         template_id = int(message.text) - 1
     except ValueError as e:
@@ -234,9 +271,10 @@ def mention_all(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
+
     if message.from_user.id != message.chat.id:
         mention_message = ''
-        all_usernames = gen_users(engine)
+        all_usernames = get_usernames(engine)
         for username in all_usernames:
             mention_message += f'@{username} '
         mention_message = str.rstrip(mention_message)
@@ -244,6 +282,19 @@ def mention_all(message: Message) -> None:
         bot.send_message(message.chat.id, mention_message)
     else:
         bot.reply_to(message, REPLIES['only_for_chat'])
+
+    print("{username} with id {id} called '/everyone' in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
+
+
+@bot.message_handler(commands=['help'])
+def help_command(message: Message) -> None:
+    """Handler that will send to user list of command that he provides
+
+    Args:
+        message (Message): Object, that contains information of received message
+    """
+    bot.reply_to(message, REPLIES['help'])
+    bot.reply_to(message, REPLIES['commands'])
 
 
 @bot.message_handler(func=lambda _: True)
