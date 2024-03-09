@@ -56,8 +56,13 @@ def start_command(message: Message)-> None:
         message (Message): Object, that contains information of received message
     """
     bot.reply_to(message, REPLIES['start'])
-    bot.reply_to(message, REPLIES['register'])
-    bot.register_next_step_handler(message, register_user)
+    curr_user_rr_name = get_user(message.from_user.id, message.from_user.username, engine)
+    if curr_user_rr_name == '':
+        bot.reply_to(message, REPLIES['register'])
+        bot.register_next_step_handler(message, register_user)
+    else:
+        bot.reply_to(message, REPLIES['logged'].format(rr_name=curr_user_rr_name))
+        bot.reply_to(message, REPLIES['commands'])
 
     print(message.from_user.id, message.from_user.username)
 
