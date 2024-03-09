@@ -1,13 +1,14 @@
 from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 from database.msg_templates import REPLIES
-from database.msg_templates import TEMPLATES
-from database.dbworker import get_user, gen_users, add_rr_name
+from database.dbworker import get_user, gen_users, add_rr_name, update_templates, get_templates
 
 from loader import bot, engine, dev_id, leader_id, secret_word
 
 # DEVS = [int(dev_id), int(leader_id)]
 DEVS = [int(dev_id)]
+TEMPLATES = get_templates(engine)
+ALPHABET = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
 
 def gen_templates() -> str:
     """Function that generates one entire message with templates
@@ -18,9 +19,11 @@ def gen_templates() -> str:
     message = 'Ваши шаблоны:\n\n'
     for id, template in enumerate(TEMPLATES):
         formatted_template = ''
-        for word in str.split(TEMPLATES[template]):
+        for word in str.split(template):
             if word == '{rr_name}':
                 formatted_template += 'имя_соклановца'
+            elif word[:-1] == '{rr_name}':
+                formatted_template += 'имя_соклановца' + word[-1]
             else:
                 formatted_template += word
             formatted_template += ' '
@@ -28,6 +31,7 @@ def gen_templates() -> str:
         message += f"{id+1}) {formatted_template}\n\n"
 
     return message
+
 
 def stop_talking(message: Message) -> bool:
     """Function that provides exit from dialogue.
@@ -130,10 +134,10 @@ def choose_template(message: Message) -> None:
 
     for user in gen_users(engine):
         if user.id == message.from_user.id:
-            bot.send_message(user.id, TEMPLATES[message.text].format(rr_name=user.rr_name))
+            bot.send_message(user.id, TEMPLATES[int(message.text)-1].format(rr_name=user.rr_name))
             continue
         else:
-            bot.send_message(user.id, TEMPLATES[message.text].format(rr_name=user.rr_name))
+            bot.send_message(user.id, TEMPLATES[int(message.text)-1].format(rr_name=user.rr_name))
 
 
 @bot.message_handler(commands=['new'])
@@ -153,24 +157,21 @@ def add_template(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-    last_key = ''
     user_template = ''
-
-    for keys in TEMPLATES:
-        last_key = keys
-    last_key = str(int(last_key)+1)
 
     for word in str.split(message.text):
         if 'имя_игрока' in word:
-            user_template += "{rr_name}"+word[-1]
+            user_template += "{rr_name}"
+            if word[-1].lower() not in ALPHABET:
+                user_template += word[-1]
         else:
             user_template += word
         user_template += ' '
     
     user_template = str.rstrip(user_template)
 
-    TEMPLATES[last_key] = user_template
-    print(TEMPLATES)
+    TEMPLATES.append(user_template)
+    update_templates(TEMPLATES, engine)
 
 
 @bot.message_handler(func=lambda _: True)

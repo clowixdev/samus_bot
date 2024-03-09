@@ -14,3 +14,13 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     username = Column(String)
     rr_name = Column(String)
+
+class Template(Base):
+    """SQLAlchemy model of template
+
+    Args:
+        Base (Class): base class for declarative class definitions
+    """
+    __tablename__ = "template"
+    id = Column(Integer, primary_key=True)
+    template = Column(String)
