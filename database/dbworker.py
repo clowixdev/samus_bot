@@ -106,17 +106,17 @@ def gen_users(engine: Engine) -> list:
 
     return users
 
-def get_templates(engine: Engine) -> list:
+def get_templates(engine: Engine) -> dict:
     """Function, that will generate dictionary from database table with templates
     Args:
         engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
     """
     session = create_session(engine)
-    all_templates = []
+    all_templates = dict()
     try:
         templates = session.execute(select(Template).order_by(Template.id)).all()
         for template in templates:
-            all_templates.append(f"{template[0].template}")
+            all_templates[template[0].id] = (f"{template[0].template}")
     except Exception as e:
         print(e)
         session.rollback()
@@ -125,7 +125,7 @@ def get_templates(engine: Engine) -> list:
 
     return all_templates
 
-def update_templates(templates: list, engine: Engine) -> None:
+def update_templates(template: str, id: int, engine: Engine) -> None:
     """Function, that will update database table with templates after adding
 
     Args:
@@ -137,16 +137,31 @@ def update_templates(templates: list, engine: Engine) -> None:
     """
     session = create_session(engine)
     try:
-        for id, template in enumerate(templates):
-            db_template = session.query(Template).filter_by(id=id).first()
-            if not db_template:
-                db_template = Template(id=id, template=template)
-            else:
-                db_template.template = template
-            session.add(db_template)
+        db_template = session.query(Template).filter_by(id=id).first()
+        if not db_template:
+            db_template = Template(id=id, template=template)
+        session.add(db_template)
         session.commit()
     except BaseException as e:
         print(e)
         session.rollback()
     finally:
-        session.close()        
+        session.close()
+
+def delete_template(template_id: int, engine: Engine) -> None:
+    """Function that will delete template with matched template_id
+
+    Args:
+        template_id (int): ID of template that will be deleted
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+    """
+    session = create_session(engine)
+    try:
+        template = session.query(Template).filter_by(id=template_id).first()
+        session.delete(template)
+        session.commit()
+    except BaseException as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()

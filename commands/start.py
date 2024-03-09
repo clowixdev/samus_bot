@@ -1,13 +1,12 @@
 from telebot.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 
 from database.msg_templates import REPLIES
-from database.dbworker import get_user, gen_users, add_rr_name, update_templates, get_templates
+from database.dbworker import get_user, gen_users, add_rr_name, update_templates, get_templates, delete_template
 
 from loader import bot, engine, dev_id, leader_id, secret_word
 
 # DEVS = [int(dev_id), int(leader_id)]
 DEVS = [int(dev_id)]
-TEMPLATES = get_templates(engine)
 ALPHABET = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
 
 def gen_templates() -> str:
@@ -17,9 +16,10 @@ def gen_templates() -> str:
         str: Generated message
     """
     message = 'Ваши шаблоны:\n\n'
-    for id, template in enumerate(TEMPLATES):
+    current_templates = get_templates(engine)
+    for keys in current_templates:
         formatted_template = ''
-        for word in str.split(template):
+        for word in str.split(current_templates[keys]):
             if word == '{rr_name}':
                 formatted_template += 'имя_соклановца'
             elif word[:-1] == '{rr_name}':
@@ -28,7 +28,7 @@ def gen_templates() -> str:
                 formatted_template += word
             formatted_template += ' '
         formatted_template = str.rstrip(formatted_template)
-        message += f"{id+1}) {formatted_template}\n\n"
+        message += f"{keys+1}) {formatted_template}\n\n"
 
     return message
 
@@ -47,6 +47,7 @@ def stop_talking(message: Message) -> bool:
         bot.reply_to(message, REPLIES['stop'])
         return True
     return False
+
 
 @bot.message_handler(commands=['start'])
 def start_command(message: Message)-> None:
@@ -67,7 +68,6 @@ def start_command(message: Message)-> None:
     print(message.from_user.id, message.from_user.username)
 
 
-# @bot.message_handler(commands=['register'])
 def register_user(message: Message) -> None:
     """Handler that will add users to database and also add their ingame nickname
 
@@ -83,7 +83,6 @@ def register_user(message: Message) -> None:
     bot.register_next_step_handler(message, auth_member, username=rr_username)
 
 
-# @bot.message_handler(commands=['auth'])
 def auth_member(message: Message, username: list) -> None:
     """Handler that will check if user is a member of clan
 
@@ -107,7 +106,7 @@ def auth_member(message: Message, username: list) -> None:
 
 
 @bot.message_handler(commands=['all'])
-def mention_all(message: Message) -> None:
+def handle_all(message: Message) -> None:
     """Handler that allows leaders to contact all clan members
 
     Args:
@@ -116,7 +115,7 @@ def mention_all(message: Message) -> None:
 
     if stop_talking(message):
         return
-
+    
     if message.from_user.id in DEVS:
         bot.reply_to(message, REPLIES['choose_template'])
         bot.reply_to(message, gen_templates())
@@ -125,7 +124,6 @@ def mention_all(message: Message) -> None:
         print("Permission error")
 
 
-# @bot.message_handler(func=lambda _: False)
 def choose_template(message: Message) -> None:
     """Handler that will send choosen template to all members of the clan
 
@@ -136,13 +134,21 @@ def choose_template(message: Message) -> None:
 
     if stop_talking(message):
         return
+    
+    templates = get_templates(engine)
+    try:
+        template_id = int(message.text) - 1
+    except ValueError as e:
+        bot.reply_to(message, REPLIES['invalid_key'])
+        bot.register_next_step_handler(message, handle_all)
 
     for user in gen_users(engine):
         if user.id == message.from_user.id:
-            bot.send_message(user.id, TEMPLATES[int(message.text)-1].format(rr_name=user.rr_name))
+            bot.send_message(user.id, templates[template_id].format(rr_name=user.rr_name))
             continue
         else:
-            bot.send_message(user.id, TEMPLATES[int(message.text)-1].format(rr_name=user.rr_name))
+            bot.send_message(user.id, templates[template_id].format(rr_name=user.rr_name))
+    bot.send_message(message.from_user.id, REPLIES['msg_sent'])
 
 
 @bot.message_handler(commands=['new'])
@@ -175,8 +181,50 @@ def add_template(message: Message) -> None:
     
     user_template = str.rstrip(user_template)
 
-    TEMPLATES.append(user_template)
-    update_templates(TEMPLATES, engine)
+    last_key = ''
+    new_template_id = 0
+    templates = get_templates(engine)
+    try:
+        for key in templates:
+            last_key = key
+        new_template_id = str(last_key + 1)
+    except Exception as e:
+        print(e)
+
+    update_templates(user_template, new_template_id, engine)
+    bot.reply_to(message, REPLIES['template_created'])
+
+
+@bot.message_handler(commands=['del'])
+def handle_del(message: Message) -> None:
+    """Handler that can help leader del added templates
+
+    Args:
+        message (Message): Object, that contains information of received message
+    """
+    bot.reply_to(message, gen_templates())
+    bot.reply_to(message, REPLIES['del_template'])
+    bot.register_next_step_handler(message, del_template)
+
+
+def del_template(message: Message) -> None:
+    """Function that add leader template
+
+    Args:
+        message (Message): Object, that contains information of received message
+    """
+    try:
+        template_id = int(message.text) - 1
+    except ValueError as e:
+        bot.reply_to(message, REPLIES['invalid_key'])
+        bot.register_next_step_handler(message, handle_del)
+
+    try:
+        delete_template(template_id, engine)
+        bot.reply_to(message, REPLIES['template_deleted'])
+    except KeyError as e:
+        bot.reply_to(message, REPLIES['invalid_key'])
+        bot.register_next_step_handler(message, handle_del)
 
 
 @bot.message_handler(func=lambda _: True)
