@@ -97,7 +97,7 @@ def gen_users(engine: Engine) -> list:
     try:
         all_users = session.execute(select(User).order_by(User.id)).all()
         for user in all_users:
-            users += user
+            users.append(user[0].username)
     except Exception as e:
         print(e)
         session.rollback()

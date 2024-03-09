@@ -65,7 +65,7 @@ def start_command(message: Message)-> None:
         bot.reply_to(message, REPLIES['logged'].format(rr_name=curr_user_rr_name))
         bot.reply_to(message, REPLIES['commands'])
 
-    print(message.from_user.id, message.from_user.username)
+    print(message.from_user.id, message.from_user.username, message.chat.id)
 
 
 def register_user(message: Message) -> None:
@@ -227,12 +227,32 @@ def del_template(message: Message) -> None:
         bot.register_next_step_handler(message, handle_del)
 
 
+@bot.message_handler(commands=['everyone'])
+def mention_all(message: Message) -> None:
+    """This command will mention all registered users in database
+
+    Args:
+        message (Message): Object, that contains information of received message
+    """
+    if message.from_user.id != message.chat.id:
+        mention_message = ''
+        all_usernames = gen_users(engine)
+        for username in all_usernames:
+            mention_message += f'@{username} '
+        mention_message = str.rstrip(mention_message)
+        mention_message += REPLIES['after_everyone']
+        bot.send_message(message.chat.id, mention_message)
+    else:
+        bot.reply_to(message, REPLIES['only_for_chat'])
+
+
 @bot.message_handler(func=lambda _: True)
-def incorrect_command(message: Message)-> None:
+def incorrect_command(message: Message) -> None:
     """Handler that provides work with synonims of the word "Hello" 
     to greet the user and notify him that he is doing something wrong.
 
     Args:
         message (Message): Object, that contains information of received message
     """
-    bot.reply_to(message, REPLIES['incorrect'])
+    if message.chat.id == message.from_user.id:
+        bot.reply_to(message, REPLIES['incorrect'])
