@@ -74,7 +74,7 @@ def start_command(message: Message)-> None:
 
     bot.reply_to(message, REPLIES['start'])
     curr_user_rr_name = get_user(message.from_user.id, message.from_user.username, engine)
-    if curr_user_rr_name == '':
+    if curr_user_rr_name == '_empty_name_':
         bot.reply_to(message, REPLIES['register'])
         bot.register_next_step_handler(message, register_user)
     else:
@@ -94,12 +94,11 @@ def register_user(message: Message) -> None:
     if stop_talking(message):
         return
 
-    rr_username = message.text
     bot.reply_to(message, REPLIES['authenticate'])
-    bot.register_next_step_handler(message, auth_member, username=rr_username)
+    bot.register_next_step_handler(message, auth_member, username=message.text)
 
 
-def auth_member(message: Message, username: list) -> None:
+def auth_member(message: Message, username: str) -> None:
     """Handler that will check if user is a member of clan
 
     Args:
@@ -115,7 +114,7 @@ def auth_member(message: Message, username: list) -> None:
             add_rr_name(message.from_user.id, message.from_user.username, username, engine)
             bot.reply_to(message, REPLIES['auth_passed'])
         else:
-            print("Error occured while creating user")
+            print("Error occured while getting user from db")
     else:
         bot.reply_to(message, REPLIES['auth_failed'])
         print(f"auth failed by {message.from_user.username}")
@@ -152,19 +151,45 @@ def choose_template(message: Message) -> None:
     if stop_talking(message):
         return
     
+    if message.text == '0':
+        bot.send_message(message.from_user.id, REPLIES['send_without_storing'])
+        bot.register_next_step_handler(message, send_without_storing)
+    
     templates = get_templates(engine)
     try:
         template_id = int(message.text) - 1
     except ValueError as e:
         bot.reply_to(message, REPLIES['invalid_key'])
-        bot.register_next_step_handler(message, handle_all)
+        handle_all(message)
+        return
 
     for user in gen_users(engine):
         if user.id == message.from_user.id:
             bot.send_message(user.id, templates[template_id].format(rr_name=user.rr_name))
             continue
         else:
-            bot.send_message(user.id, templates[template_id].format(rr_name=user.rr_name))
+            try:
+                bot.send_message(user.id, templates[template_id].format(rr_name=user.rr_name))
+            except KeyError as e:
+                print(e)
+                bot.reply_to(message, REPLIES['invalid_key'])
+                handle_all(message)
+                return
+    bot.send_message(message.from_user.id, REPLIES['msg_sent'])
+
+
+def send_without_storing(message: Message) -> None:
+    """This handler will allow leader to send message right now without saving it
+
+    Args:
+        message (Message): Object, that contains information of received message
+    """
+    for user in gen_users(engine):
+        if user.id == message.from_user.id:
+            bot.send_message(user.id, message.text)
+            continue
+        else:
+            bot.send_message(user.id, message.text)
     bot.send_message(message.from_user.id, REPLIES['msg_sent'])
 
 
@@ -254,14 +279,17 @@ def del_template(message: Message) -> None:
         template_id = int(message.text) - 1
     except ValueError as e:
         bot.reply_to(message, REPLIES['invalid_key'])
-        bot.register_next_step_handler(message, handle_del)
+        handle_del(message)
+        return
 
     try:
         delete_template(template_id, engine)
         bot.reply_to(message, REPLIES['template_deleted'])
     except KeyError as e:
         bot.reply_to(message, REPLIES['invalid_key'])
-        bot.register_next_step_handler(message, handle_del)
+        handle_del(message)
+        return
+
 
 
 @bot.message_handler(commands=['everyone'])
