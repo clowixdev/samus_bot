@@ -44,13 +44,14 @@ def get_user(user_id: int, username:str, engine: Engine) -> User:
         user (User): An user entity
     """
     session = create_session(engine)
-    rr_name = ''
+    rr_name = '_empty_name_'
     try:
         user = session.query(User).filter_by(id=user_id).first()
         if not user:
             user = User(id=user_id, username=username, rr_name=rr_name)
-            session.add(user)
-        rr_name = user.rr_name
+        else:
+            rr_name = user.rr_name
+        session.add(user)
         session.commit()
     except BaseException as e:
         print(e)
