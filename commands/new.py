@@ -1,4 +1,4 @@
-from telebot.types import Message
+from telebot.types import Message, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 from database.msg_templates import REPLIES
 from database.dbworker import update_templates, get_templates
@@ -6,10 +6,12 @@ from database.dbworker import update_templates, get_templates
 from loader import bot, engine
 
 from functions.funcs import in_group, stop_talking
+from functions.keyboards import create_start_markup
 
-ALPHABET = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
+ALPHABET = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
 
-@bot.message_handler(commands=['new'])
+@bot.message_handler(commands=["new"])
+@bot.message_handler(func=lambda message: message.text == "Создать шаблон 📝")
 def handle_new(message: Message) -> None:
     """Handler that can help leader add his own templates
 
@@ -20,10 +22,10 @@ def handle_new(message: Message) -> None:
     if in_group(message):
         return
 
-    bot.reply_to(message, REPLIES['add_template'])
+    bot.reply_to(message, REPLIES["add_template"], reply_markup=ReplyKeyboardRemove())
     bot.register_next_step_handler(message, add_template)
 
-    print("{username} with id {id} called '/new' in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
+    print("{username} with id {id} called \"/new\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
 
 
 def add_template(message: Message) -> None:
@@ -36,20 +38,20 @@ def add_template(message: Message) -> None:
     if stop_talking(message):
         return
     
-    user_template = ''
+    user_template = ""
 
     for word in str.split(message.text):
-        if 'имя_игрока' in word:
+        if "имя_игрока" in word:
             user_template += "{rr_name}"
             if word[-1].lower() not in ALPHABET:
                 user_template += word[-1]
         else:
             user_template += word
-        user_template += ' '
+        user_template += " "
     
     user_template = str.rstrip(user_template)
 
-    last_key = ''
+    last_key = ""
     new_template_id = 0
     templates = get_templates(engine)
     try:
@@ -60,4 +62,4 @@ def add_template(message: Message) -> None:
         print(e)
 
     update_templates(user_template, new_template_id, engine)
-    bot.reply_to(message, REPLIES['template_created'])
+    bot.reply_to(message, REPLIES["template_created"], reply_markup=create_start_markup())
