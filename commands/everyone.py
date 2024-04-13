@@ -1,11 +1,9 @@
 from telebot.types import Message
 
 from database.msg_templates import REPLIES
-from database.dbworker import get_user, gen_users, add_rr_name, update_templates, get_templates, delete_template, get_usernames
+from database.dbworker import get_usernames
 
-from loader import bot, engine, secret_word, DEVS, ADMINS
-
-from functions.funcs import in_group, stop_talking, gen_templates
+from loader import bot, engine
 
 
 @bot.message_handler(commands=['everyone'])

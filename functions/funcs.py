@@ -1,9 +1,10 @@
 from telebot.types import Message
 
 from database.msg_templates import REPLIES
-from database.dbworker import get_user, gen_users, add_rr_name, update_templates, get_templates, delete_template, get_usernames
+from database.dbworker import get_templates
 
-from loader import bot, engine, secret_word, DEVS, ADMINS
+from loader import bot, engine
+
 
 def gen_templates() -> str:
     """Function that generates one entire message with templates
@@ -28,6 +29,7 @@ def gen_templates() -> str:
 
     return message
 
+
 def stop_talking(message: Message) -> bool:
     """Function that provides exit from dialogue.
 
@@ -42,6 +44,7 @@ def stop_talking(message: Message) -> bool:
         bot.reply_to(message, REPLIES['stop'])
         return True
     return False
+
 
 def in_group(message: Message) -> bool:
     """Function that tells you whether bot called in group or not
