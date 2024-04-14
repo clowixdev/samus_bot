@@ -5,6 +5,8 @@ from telebot.types import Message
 from database.msg_templates import REPLIES
 from database.dbworker import get_templates
 
+from functions.keyboards import create_start_markup
+
 from loader import bot, engine
 
 
@@ -16,6 +18,10 @@ def gen_templates() -> Tuple[str, int]:
     """
     message = "Ваши шаблоны:\n\n"
     current_templates = get_templates(engine)
+    
+    if current_templates == {}:
+        raise ValueError
+
     for keys in current_templates:
         formatted_template = ""
         for word in str.split(current_templates[keys]):
@@ -41,9 +47,9 @@ def stop_talking(message: Message) -> bool:
     Returns:
         bool: Returns true if message match "stop-word" else false
     """
-    if message.text.lower() == "стоп":
+    if message.text.lower() == "стоп" or message.text == "Стоп ❌":
         bot.clear_step_handler_by_chat_id(message.chat.id)
-        bot.reply_to(message, REPLIES["stop"])
+        bot.reply_to(message, REPLIES["stop"], reply_markup=create_start_markup())
         return True
     return False
 
