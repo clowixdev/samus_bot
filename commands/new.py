@@ -1,12 +1,12 @@
 from telebot.types import Message, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 from database.msg_templates import REPLIES
-from database.dbworker import update_templates, get_templates
+from database.dbworker import add_templates, get_templates
 
 from loader import bot, engine
 
 from functions.funcs import in_group, stop_talking
-from functions.keyboards import create_start_markup
+from functions.keyboards import create_start_markup, create_stop_markup
 
 ALPHABET = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
 
@@ -22,7 +22,7 @@ def handle_new(message: Message) -> None:
     if in_group(message):
         return
 
-    bot.reply_to(message, REPLIES["add_template"], reply_markup=ReplyKeyboardRemove())
+    bot.reply_to(message, REPLIES["add_template"], reply_markup=create_stop_markup())
     bot.register_next_step_handler(message, add_template)
 
     print("{username} with id {id} called \"/new\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
@@ -51,15 +51,5 @@ def add_template(message: Message) -> None:
     
     user_template = str.rstrip(user_template)
 
-    last_key = ""
-    new_template_id = 0
-    templates = get_templates(engine)
-    try:
-        for key in templates:
-            last_key = key
-        new_template_id = str(last_key + 1)
-    except Exception as e:
-        print(e)
-
-    update_templates(user_template, new_template_id, engine)
+    add_templates(user_template, engine)
     bot.reply_to(message, REPLIES["template_created"], reply_markup=create_start_markup())
