@@ -44,13 +44,10 @@ def get_user(user_id: int, username:str, engine: Engine) -> User:
         user (User): An user entity
     """
     session = create_session(engine)
-    rr_name = '_empty_name_'
     try:
         user = session.query(User).filter_by(id=user_id).first()
         if not user:
-            user = User(id=user_id, username=username, rr_name=rr_name)
-        else:
-            rr_name = user.rr_name
+            return None
         session.add(user)
         session.commit()
     except BaseException as e:
@@ -59,10 +56,10 @@ def get_user(user_id: int, username:str, engine: Engine) -> User:
     finally:
         session.close()
 
-    return rr_name
+    return user
 
-def add_rr_name(user_id: int, username:str, ingame_name: str, engine: Engine) -> User:
-    """Function that adds rush royale username for user.
+def add_user(user_id: int, username:str, ingame_name: str, engine: Engine) -> User:
+    """Function that adds user with all attributes.
 
     Args:
         user_id (int): ID of user thah defined by Telegram
@@ -72,10 +69,8 @@ def add_rr_name(user_id: int, username:str, ingame_name: str, engine: Engine) ->
     """
     session = create_session(engine)
     try:
-        user = session.query(User).filter_by(id=user_id).first()
-        if user:
-            user.rr_name = ingame_name
-            session.add(user)
+        user = User(id=user_id, username=username, rr_name=ingame_name)
+        session.add(user)
         session.commit()
     except BaseException as e:
         print(e)

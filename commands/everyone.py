@@ -3,6 +3,9 @@ from telebot.types import Message
 from database.msg_templates import REPLIES
 from database.dbworker import get_usernames
 
+from functions.funcs import is_member
+from functions.keyboards import create_unlogged_markup
+
 from loader import bot, engine
 
 
@@ -13,6 +16,10 @@ def mention_all(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
+
+    if not is_member(message):
+        bot.reply_to(message, REPLIES["not_logged"], reply_markup=create_unlogged_markup())
+        return
 
     if message.from_user.id != message.chat.id:
         mention_message = ""

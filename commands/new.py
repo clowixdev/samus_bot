@@ -1,12 +1,12 @@
 from telebot.types import Message, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
 
 from database.msg_templates import REPLIES
-from database.dbworker import add_templates, get_templates
+from database.dbworker import add_templates
 
 from loader import bot, engine
 
-from functions.funcs import in_group, stop_talking
-from functions.keyboards import create_start_markup, create_stop_markup
+from functions.funcs import in_group, stop_talking, is_member
+from functions.keyboards import create_start_markup, create_stop_markup, create_unlogged_markup
 
 ALPHABET = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
 
@@ -18,6 +18,10 @@ def handle_new(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
+
+    if not is_member(message):
+        bot.reply_to(message, REPLIES["not_logged"], reply_markup=create_unlogged_markup())
+        return
 
     if in_group(message):
         return

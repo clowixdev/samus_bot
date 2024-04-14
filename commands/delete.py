@@ -5,8 +5,8 @@ from database.dbworker import delete_template, get_templates
 
 from loader import bot, engine
 
-from functions.funcs import in_group, stop_talking, gen_templates
-from functions.keyboards import create_del_markup, create_start_markup
+from functions.funcs import in_group, stop_talking, gen_templates, is_member
+from functions.keyboards import create_del_markup, create_start_markup, create_unlogged_markup
 
 
 @bot.message_handler(commands=["del"])
@@ -17,7 +17,10 @@ def handle_del(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
+    if not is_member(message):
+        bot.reply_to(message, REPLIES["not_logged"], reply_markup=create_unlogged_markup())
+        return
+    
     if in_group(message):
         return
 

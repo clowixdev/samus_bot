@@ -5,8 +5,8 @@ from database.dbworker import gen_users, get_templates
 
 from loader import bot, engine, DEVS
 
-from functions.funcs import in_group, stop_talking, gen_templates
-from functions.keyboards import create_all_markup, create_start_markup
+from functions.funcs import in_group, stop_talking, gen_templates, is_member
+from functions.keyboards import create_all_markup, create_start_markup, create_stop_markup, create_unlogged_markup
 
 
 @bot.message_handler(commands=["all"])
@@ -17,6 +17,10 @@ def handle_all(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
+    if not is_member(message):
+        bot.reply_to(message, REPLIES["not_logged"], reply_markup=create_unlogged_markup())
+        return
+
     if in_group(message):
         return
     
@@ -46,8 +50,9 @@ def choose_template(message: Message) -> None:
         return
     
     if message.text == "Отправить без сохранения 📋" or message.text == "0":
-        bot.send_message(message.from_user.id, REPLIES["send_without_storing"])
+        bot.send_message(message.from_user.id, REPLIES["send_without_storing"], reply_markup=create_stop_markup())
         bot.register_next_step_handler(message, send_without_storing)
+        return
     
     templates = get_templates(engine)
     try:
@@ -85,6 +90,10 @@ def send_without_storing(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
+
+    if stop_talking(message):
+        return
+
     for user in gen_users(engine):
         if user.id == message.from_user.id:
             bot.send_message(user.id, message.text)

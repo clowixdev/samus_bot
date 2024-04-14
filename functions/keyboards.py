@@ -33,11 +33,10 @@ def create_all_markup(templates_amt: int) -> ReplyKeyboardMarkup:
         markup_button = KeyboardButton(f"Шаблон номер {button+1} 💾")
         all_markup.add(markup_button)
 
-    new_button = KeyboardButton("Создать шаблон 📝")
     instant_send_button = KeyboardButton("Отправить без сохранения 📋")
     stop_button = KeyboardButton("Стоп ❌")
 
-    all_markup.add(new_button, instant_send_button, stop_button)
+    all_markup.add(instant_send_button, stop_button)
 
     return all_markup
 
@@ -86,3 +85,15 @@ def create_stop_markup() -> ReplyKeyboardMarkup:
     stop_markup.add(stop_button)
 
     return stop_markup
+
+def create_unlogged_markup() -> ReplyKeyboardMarkup:
+    """Fucntion that will create ReplyKeyboard for unlogged user and return it
+
+    Returns:
+        ReplyKeyboardMarkup: created markup for unlogged user command
+    """
+    unlogged_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    start_button = KeyboardButton("Начать ⭐")
+    unlogged_markup.add(start_button)
+
+    return unlogged_markup
