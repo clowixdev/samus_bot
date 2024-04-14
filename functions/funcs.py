@@ -16,7 +16,7 @@ def gen_templates() -> Tuple[str, int]:
     Returns:
         str: Generated message
     """
-    message = "Ваши шаблоны:\n\n"
+    message = "Все шаблоны:\n\n"
     current_templates = get_templates(engine)
     
     if current_templates == {}:
