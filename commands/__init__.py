@@ -1,1 +1,1 @@
-from . import start
+from . import (all, delete, everyone, new, view, admin, base)
