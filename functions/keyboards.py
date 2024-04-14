@@ -10,7 +10,7 @@ def create_start_markup() -> ReplyKeyboardMarkup:
 
     all_button = KeyboardButton("Рассылка клану 📨")
     new_button = KeyboardButton("Создать шаблон 📝")
-    del_button = KeyboardButton("Удалить шаблон 🧹")
+    del_button = KeyboardButton("Удалить шаблон 🗑️")
     help_button = KeyboardButton("Помощь 📃")
 
     start_markup.add(all_button, new_button, del_button, help_button)
@@ -34,8 +34,9 @@ def create_all_markup(templates_amt: int) -> ReplyKeyboardMarkup:
 
     new_button = KeyboardButton("Создать шаблон 📝")
     instant_send_button = KeyboardButton("Отправить без сохранения 📋")
+    stop_button = KeyboardButton("Стоп ❌")
 
-    all_markup.add(new_button, instant_send_button)
+    all_markup.add(new_button, instant_send_button, stop_button)
 
     return all_markup
 
@@ -71,3 +72,15 @@ def create_help_markup() -> ReplyKeyboardMarkup:
     help_markup.add(help_button)
 
     return help_markup
+
+def create_stop_markup() -> ReplyKeyboardMarkup:
+    """Fucntion that will create ReplyKeyboard with only 1 command, to stop dialogue and return it
+
+    Returns:
+        ReplyKeyboardMarkup: created markup for stopping dialogue
+    """
+    stop_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    stop_button = KeyboardButton("Стоп ❌")
+    stop_markup.add(stop_button)
+
+    return stop_markup
