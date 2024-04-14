@@ -5,6 +5,7 @@ This telegram bot will be used as notifier for clan members. Also, this bot can 
 ## Fixes to do:
     1. Work out correct behavior while deleting templates - DONE
     2. Fix behaviour while generating empty templates - DONE
+    3. If user is not a member, ask him to auth or drop dialogue - DONE
 
 ## TODO:
     1. Add inline keyboards - DONE
