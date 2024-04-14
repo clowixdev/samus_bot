@@ -21,11 +21,13 @@ def handle_all(message: Message) -> None:
         return
     
     if message.from_user.id in DEVS:
-        bot.reply_to(message, REPLIES["choose_template"])
-        templates, templates_amt = gen_templates()
-
-        bot.reply_to(message, templates, reply_markup=create_all_markup(templates_amt))
-        bot.register_next_step_handler(message, choose_template)
+        try:
+            templates, templates_amt = gen_templates()
+            bot.reply_to(message, REPLIES["choose_template"])
+            bot.reply_to(message, templates, reply_markup=create_all_markup(templates_amt))
+            bot.register_next_step_handler(message, choose_template)
+        except ValueError as e:
+            bot.reply_to(message, REPLIES["empty_templates"], reply_markup=create_start_markup())
     else:
         print("Permission error")
 
@@ -49,7 +51,10 @@ def choose_template(message: Message) -> None:
     
     templates = get_templates(engine)
     try:
-        template_id = int(message.text[-3]) - 1
+        if len(message.text) == 1:
+            template_id = int(message.text) - 1
+        else:
+            template_id = int(message.text[-3]) - 1
     except ValueError as e:
         bot.reply_to(message, REPLIES["invalid_key"])
         handle_all(message)
@@ -57,13 +62,17 @@ def choose_template(message: Message) -> None:
 
     for user in gen_users(engine):
         if user.id == message.from_user.id:
-            bot.send_message(user.id, templates[template_id].format(rr_name=user.rr_name))
+            try:
+                bot.send_message(user.id, templates[template_id].format(rr_name=user.rr_name))
+            except KeyError as e:
+                bot.reply_to(message, REPLIES["invalid_key"])
+                handle_all(message)
+                return
             continue
         else:
             try:
                 bot.send_message(user.id, templates[template_id].format(rr_name=user.rr_name))
             except KeyError as e:
-                print(e)
                 bot.reply_to(message, REPLIES["invalid_key"])
                 handle_all(message)
                 return

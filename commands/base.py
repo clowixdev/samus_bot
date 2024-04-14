@@ -26,8 +26,7 @@ def start_command(message: Message)-> None:
         bot.reply_to(message, REPLIES["register"])
         bot.register_next_step_handler(message, register_user)
     else:
-        bot.reply_to(message, REPLIES["logged"].format(rr_name=curr_user_rr_name))
-        bot.reply_to(message, REPLIES["commands"], reply_markup=create_start_markup())
+        bot.reply_to(message, REPLIES["logged"].format(rr_name=curr_user_rr_name), reply_markup=create_start_markup())
 
     print("{username} with id {id} called \"/start\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
 
