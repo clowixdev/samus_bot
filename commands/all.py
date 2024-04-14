@@ -92,7 +92,6 @@ def send_without_storing(message: Message) -> None:
 
     for user in gen_users(engine):
         if user.id == message.from_user.id:
-            bot.send_message(user.id, message.text)
             continue
         else:
             bot.send_message(user.id, message.text)
