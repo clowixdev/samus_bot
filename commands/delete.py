@@ -3,7 +3,7 @@ from telebot.types import Message
 from database.msg_templates import REPLIES
 from database.dbworker import delete_template, get_templates
 
-from loader import bot, engine
+from loader import bot, engine, DEVS, ADMINS
 
 from functions.funcs import in_group, stop_talking, gen_templates, is_member
 from functions.keyboards import create_del_markup, create_start_markup, create_unlogged_markup
@@ -11,17 +11,21 @@ from functions.keyboards import create_del_markup, create_start_markup, create_u
 
 @bot.message_handler(commands=["del"])
 @bot.message_handler(func=lambda message: message.text == "Удалить шаблон 🗑️")
-def handle_del(message: Message) -> None:
+def delete_command(message: Message) -> None:
     """Handler that can help leader del added templates
 
     Args:
         message (Message): Object, that contains information of received message
-    """
+    """    
+    if in_group(message):
+        return
+    
     if not is_member(message):
         bot.reply_to(message, REPLIES["not_logged"], reply_markup=create_unlogged_markup())
         return
     
-    if in_group(message):
+    if not (message.from_user.id in DEVS or message.from_user.id in ADMINS):
+        bot.reply_to(message, REPLIES["rights_required"])
         return
 
     try:
@@ -52,7 +56,7 @@ def del_template(message: Message) -> None:
             template_id = int(message.text[-3]) - 1
     except ValueError as e:
         bot.reply_to(message, REPLIES["invalid_key"])
-        handle_del(message)
+        delete_command(message)
         return
 
     try:
@@ -61,5 +65,5 @@ def del_template(message: Message) -> None:
         bot.reply_to(message, REPLIES["template_deleted"], reply_markup=create_start_markup())
     except KeyError as e:
         bot.reply_to(message, REPLIES["invalid_key"])
-        handle_del(message)
+        delete_command(message)
         return

@@ -45,11 +45,16 @@ def get_user(user_id: int, username:str, engine: Engine) -> User:
     """
     session = create_session(engine)
     try:
-        user = session.query(User).filter_by(id=user_id).first()
-        if not user:
-            return None
-        session.add(user)
-        session.commit()
+        if user_id != None:
+            user = session.query(User).filter_by(id=user_id).first()
+            if not user:
+                return None
+        else:
+            user = session.query(User).filter_by(username=username).first()
+            if not user:
+                return None
+
+        session.expunge(user)
     except BaseException as e:
         print(e)
         session.rollback()
@@ -57,6 +62,7 @@ def get_user(user_id: int, username:str, engine: Engine) -> User:
         session.close()
 
     return user
+
 
 def add_user(user_id: int, username:str, ingame_name: str, engine: Engine) -> User:
     """Function that adds user with all attributes.
@@ -77,6 +83,29 @@ def add_user(user_id: int, username:str, ingame_name: str, engine: Engine) -> Us
         session.rollback()
     finally:
         session.close()
+
+
+def delete_user(user_id: int, engine: Engine) -> None:
+    """Deletes user from database
+
+    Args:
+        user_id (int): ID of user thah defined by Telegram
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+    """
+
+    session = create_session(engine)
+    try:
+        user = session.query(User).filter_by(id=user_id).first()
+        if not user:
+            return 
+        session.delete(user)
+        session.commit()
+    except BaseException as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
 
 def get_usernames(engine: Engine) -> list:
     """Generates list of all usernames and returns it
@@ -101,6 +130,7 @@ def get_usernames(engine: Engine) -> list:
 
     return usernames
 
+
 def gen_users(engine: Engine) -> list:
     """Generates list of all users and returns it
 
@@ -124,6 +154,7 @@ def gen_users(engine: Engine) -> list:
 
     return users
 
+
 def get_templates(engine: Engine) -> dict:
     """Function, that will generate dictionary from database table with templates
     Args:
@@ -146,6 +177,7 @@ def get_templates(engine: Engine) -> dict:
 
     return all_templates
 
+
 def add_templates(template: str, engine: Engine) -> None:
     """Function, that will update database table with templates after adding
 
@@ -162,6 +194,7 @@ def add_templates(template: str, engine: Engine) -> None:
         session.rollback()
     finally:
         session.close()
+
 
 def delete_template(template: str, engine: Engine) -> None:
     """Function that will delete template with matched template text

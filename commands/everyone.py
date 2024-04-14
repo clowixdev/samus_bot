@@ -3,25 +3,29 @@ from telebot.types import Message
 from database.msg_templates import REPLIES
 from database.dbworker import get_usernames
 
-from functions.funcs import is_member
+from functions.funcs import is_member, in_group
 from functions.keyboards import create_unlogged_markup
 
-from loader import bot, engine
+from loader import bot, engine, DEVS, ADMINS
 
 
 @bot.message_handler(commands=["everyone"])
-def mention_all(message: Message) -> None:
+def everyone_command(message: Message) -> None:
     """This command will mention all registered users in database
 
     Args:
         message (Message): Object, that contains information of received message
     """
 
-    if not is_member(message):
-        bot.reply_to(message, REPLIES["not_logged"], reply_markup=create_unlogged_markup())
+    if not (message.from_user.id in DEVS or message.from_user.id in ADMINS):
+        bot.reply_to(message, REPLIES["rights_required"])
+        return
+    
+    if not (message.from_user.id in DEVS or message.from_user.id in ADMINS):
+        bot.reply_to(message, REPLIES["rights_required"])
         return
 
-    if message.from_user.id != message.chat.id:
+    if in_group(message):
         mention_message = ""
         all_usernames = get_usernames(engine)
         for username in all_usernames:

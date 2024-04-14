@@ -85,3 +85,25 @@ def in_group(message: Message) -> bool:
     if message.from_user.id == message.chat.id:
         return False
     return True
+
+def cut_username(string: str) -> str:
+    """This function will find "@username" part of string and return it without "@"
+
+    Args:
+        string (str): given string
+
+    Returns:
+        str: telegram username without "@"
+    """
+    username = ""
+    found_at = False
+    for char in string:
+        if char == "@":
+            found_at = True
+            continue
+        if found_at:
+            username += char
+        
+    print(username)
+
+    return username

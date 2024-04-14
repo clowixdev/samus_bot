@@ -74,6 +74,9 @@ def help_command(message: Message) -> None:
         message (Message): Object, that contains information of received message
     """
 
+    if in_group(message):
+        return
+
     if not is_member(message):
         bot.reply_to(message, REPLIES["not_logged"], reply_markup=create_unlogged_markup())
         return
