@@ -69,8 +69,9 @@ def create_help_markup() -> ReplyKeyboardMarkup:
         ReplyKeyboardMarkup: created markup for missing command
     """
     help_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    start_button = KeyboardButton("Начать ⭐")
     help_button = KeyboardButton("Помощь 📃")
-    help_markup.add(help_button)
+    help_markup.add(start_button, help_button)
 
     return help_markup
 

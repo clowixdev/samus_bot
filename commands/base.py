@@ -10,6 +10,7 @@ from functions.keyboards import create_start_markup, create_help_markup
 
 
 @bot.message_handler(commands=["start"])
+@bot.message_handler(func=lambda message: message.text == "Начать ⭐")
 def start_command(message: Message)-> None:
     """Handler that provides work of "/start" command.
 
