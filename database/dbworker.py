@@ -64,18 +64,28 @@ def get_user(user_id: int, username:str, engine: Engine) -> User:
     return user
 
 
-def add_user(user_id: int, username:str, ingame_name: str, engine: Engine) -> User:
+def add_user(userdata: list, engine: Engine) -> User:
     """Function that adds user with all attributes.
 
     Args:
-        user_id (int): ID of user thah defined by Telegram
-        username (str): username of user that is defined by user and could be changed
-        ingame_name (str): username in rush royale
+        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]]) 
         engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
     """
     session = create_session(engine)
     try:
-        user = User(id=user_id, username=username, rr_name=ingame_name)
+        user = User(
+            id=userdata[0], 
+            username=userdata[2], 
+            rr_name=userdata[1],
+            crit_dmg=userdata[3], 
+            uid=userdata[4], 
+            platform=userdata[5], 
+            forest_fraction=0 in userdata[6],
+            magic_fraction=1 in userdata[6],
+            light_fraction=2 in userdata[6],
+            tech_fraction=3 in userdata[6],
+            dark_fraction=4 in userdata[6]
+        )
         session.add(user)
         session.commit()
     except BaseException as e:

@@ -4,6 +4,7 @@ from telebot.types import Message
 
 from database.msg_templates import REPLIES
 from database.dbworker import get_templates, gen_users
+from database.models import User
 
 from functions.keyboards import create_start_markup, create_unlogged_markup
 
@@ -103,7 +104,92 @@ def cut_username(string: str) -> str:
             continue
         if found_at:
             username += char
-        
-    print(username)
-
+    
+    if found_at == False: 
+        return None
     return username
+
+
+def check_platform(str: str) -> None:
+    """Fucntion that will check correctness of inputed platform
+
+    Args:
+        str (str): message that will contain platform
+
+    Raises:
+        ValueError: raises ValueError in case platform is incorrect
+    """
+    if (str != "Android") and (str != "Iphone"):
+        raise ValueError
+
+def check_uid(uid: int) -> None:
+    """Fucntion that will check correctness of inputed UID
+
+    Args:
+        str (str): message that will contain UID
+
+    Raises:
+        ValueError: raises ValueError in case UID is incorrect
+    """
+    if (uid < 10000000) or (uid > 99999999):
+        raise ValueError
+
+
+def check_critdmg(crit_dmg: int) -> None:
+    """Fucntion that will check correctness of inputed CRIT. DMG
+
+    Args:
+        str (str): message that will contain CRIT. DMG
+
+    Raises:
+        ValueError: raises ValueError in case CRIT. DMG is incorrect
+    """
+    if (crit_dmg < 1) or (crit_dmg > 6853):
+        raise ValueError
+    
+
+def create_dragon_poll() -> dict:
+    """Function that generates dictionary with all settings for poll
+
+    Returns:
+        dict: poll settings dictionary
+    """
+
+    poll = dict()
+
+    poll["question"] = REPLIES["add_fractions"]
+    poll["options"] = [
+        "Лесной союз 🍃",
+        "Магический совет 🔮",
+        "Королевство света ☀️",
+        "Техногенное общество 💡",
+        "Тёмные владения 🦇"
+    ]
+    poll["is_anonymous"] = False
+    poll["allow_multiple"] = True
+
+    return poll
+
+def gen_fractions(user: User) -> str:
+    """Function will generate fraction message
+
+    Args:
+        user (User): Object that stores all data about user
+
+    Returns:
+        str: message to implement into template
+    """
+
+    fraction_msg = ""
+    if user.forest_fraction:
+        fraction_msg += "Лесной союз 🍃\n"
+    if user.magic_fraction:
+        fraction_msg += "Магический совет 🔮\n"
+    if user.light_fraction:
+        fraction_msg += "Королевство света ☀️\n"
+    if user.tech_fraction:
+        fraction_msg += "Техногенное общество 💡\n"
+    if user.dark_fraction:
+        fraction_msg += "Тёмные владения 🦇"
+
+    return fraction_msg

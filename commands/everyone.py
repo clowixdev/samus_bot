@@ -20,10 +20,6 @@ def everyone_command(message: Message) -> None:
     if not (message.from_user.id in DEVS or message.from_user.id in ADMINS):
         bot.reply_to(message, REPLIES["rights_required"])
         return
-    
-    if not (message.from_user.id in DEVS or message.from_user.id in ADMINS):
-        bot.reply_to(message, REPLIES["rights_required"])
-        return
 
     if in_group(message):
         mention_message = ""

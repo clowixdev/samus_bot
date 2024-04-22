@@ -13,8 +13,9 @@ def create_start_markup() -> ReplyKeyboardMarkup:
     del_button = KeyboardButton("Удалить шаблон 🗑️")
     view_button = KeyboardButton("Просмотреть шаблоны 👀")
     help_button = KeyboardButton("Помощь 📃")
+    profile_button = KeyboardButton("Профиль 🪪")
 
-    start_markup.add(all_button, new_button, del_button, help_button, view_button)
+    start_markup.add(all_button, new_button, del_button, help_button, view_button, profile_button)
 
     return start_markup
 
