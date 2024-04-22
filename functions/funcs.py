@@ -21,7 +21,7 @@ def is_member(message: Message) -> bool:
     for user in gen_users(engine):
         if message.from_user.username == user.username:
             return True
-    print(f"user with username @{message.from_user.username} tried to use bot while unlogged")
+    print(f"user with username @{message.from_user.username} and id {message.from_user.id} tried to use bot while unlogged")
     return False
 
 
