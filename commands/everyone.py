@@ -3,7 +3,7 @@ from telebot.types import Message
 from database.msg_templates import REPLIES
 from database.dbworker import get_usernames
 
-from functions.funcs import is_member, in_group
+from functions.funcs import is_member, in_group, is_admin
 from functions.keyboards import create_unlogged_markup
 
 from loader import bot, engine, DEVS, ADMINS
@@ -17,7 +17,7 @@ def everyone_command(message: Message) -> None:
         message (Message): Object, that contains information of received message
     """
 
-    if not (message.from_user.id in DEVS or message.from_user.id in ADMINS):
+    if not is_admin(message.from_user.id):
         bot.reply_to(message, REPLIES["rights_required"])
         return
 

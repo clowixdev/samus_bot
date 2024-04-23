@@ -8,7 +8,7 @@ from database.models import User
 
 from functions.keyboards import create_start_markup, create_unlogged_markup
 
-from loader import bot, engine
+from loader import bot, engine, ADMINS, DEVS
 
 def is_member(message: Message) -> bool:
     """Function will check if user that sending messages is a member of a clan
@@ -67,7 +67,7 @@ def stop_talking(message: Message) -> bool:
     if message.text.lower() == "стоп" or message.text == "Стоп ❌":
         bot.clear_step_handler_by_chat_id(message.chat.id)
         if is_member(message):
-            bot.reply_to(message, REPLIES["stop"], reply_markup=create_start_markup())
+            bot.reply_to(message, REPLIES["stop"], reply_markup=create_start_markup(message.from_user.id))
         else:
             bot.reply_to(message, REPLIES["stop"], reply_markup=create_unlogged_markup())
         return True
@@ -193,3 +193,18 @@ def gen_fractions(user: User) -> str:
         fraction_msg += "Тёмные владения 🦇"
 
     return fraction_msg
+
+
+def is_admin(user_id: int) -> bool:
+    """Function will decide whether player is admin or not
+
+    Args:
+        user_id (int): User ID that is defined by Telegram
+
+    Returns:
+        bool: True if player is admin or dev and False if vice-versa
+    """
+    if not (user_id in DEVS or user_id in ADMINS):
+        return False
+    else:
+        return True

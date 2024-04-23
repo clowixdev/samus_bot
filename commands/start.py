@@ -28,7 +28,7 @@ def start_command(message: Message)-> None:
         bot.reply_to(message, REPLIES["authenticate"], reply_markup=create_stop_markup())
         bot.register_next_step_handler(message, auth_member)
     else:
-        bot.reply_to(message, REPLIES["logged"].format(rr_name=curr_user.rr_name), reply_markup=create_start_markup())
+        bot.reply_to(message, REPLIES["logged"].format(rr_name=curr_user.rr_name), reply_markup=create_start_markup(message.from_user.id))
 
     print("{username} with id {id} called \"/start\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
 
@@ -75,7 +75,7 @@ def add_critdmg(message: Message, userdata: list) -> None:
 
     Args:
         message (Message): Object, that contains information of received message
-        data (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
+        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
     """
 
     if stop_talking(message):
@@ -98,7 +98,7 @@ def add_uid(message: Message, userdata: list) -> None:
 
     Args:
         message (Message): Object, that contains information of received message
-        data (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
+        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
     """
 
     if stop_talking(message):
@@ -121,7 +121,7 @@ def add_platform(message: Message, userdata: list) -> None:
 
     Args:
         message (Message): Object, that contains information of received message
-        data (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
+        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
     """
 
     if stop_talking(message):
@@ -150,7 +150,7 @@ def add_fractions_poll(pollAnswer: PollAnswer) -> None:
 
     Args:
         message (Message): Object, that contains information of received message
-        data (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
+        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
     """
     userdata.append(pollAnswer.option_ids)
     add_fractions(userdata)
@@ -161,10 +161,11 @@ def add_fractions(userdata: list) -> None:
 
     Args:
         message (Message): Object, that contains information of received message
-        data (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
+        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
     """
     bot.delete_message(userdata[1], userdata[0])
-    bot.send_message(userdata[1], REPLIES["registration_passed"], reply_markup=create_start_markup())
     userdata.pop(0)
+    bot.send_message(userdata[0], REPLIES["registration_passed"], reply_markup=create_start_markup(userdata[0]))
+    bot.send_message(userdata[0], REPLIES["logged"].format(rr_name=userdata[1]), reply_markup=create_start_markup(userdata[0]))
 
     add_user(userdata, engine)

@@ -5,7 +5,7 @@ from database.dbworker import get_user, delete_user
 
 from loader import bot, engine, CHATS, ADMINS, DEVS
 
-from functions.funcs import in_group, cut_username
+from functions.funcs import in_group, cut_username, is_admin
 
 @bot.message_handler(commands=["kick"])
 def kick_command(message: Message)-> None:
@@ -19,7 +19,7 @@ def kick_command(message: Message)-> None:
         bot.reply_to(message, REPLIES["only_for_chat"])
         return
     
-    if not (message.from_user.id in DEVS or message.from_user.id in ADMINS):
+    if not is_admin(message.from_user.id):
         bot.reply_to(message, REPLIES["rights_required"])
         return
 

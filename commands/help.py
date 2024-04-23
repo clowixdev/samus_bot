@@ -4,7 +4,7 @@ from database.msg_templates import REPLIES
 
 from loader import bot
 
-from functions.funcs import in_group, is_member
+from functions.funcs import in_group, is_member, is_admin
 from functions.keyboards import create_start_markup, create_unlogged_markup
 
 
@@ -26,4 +26,10 @@ def help_command(message: Message) -> None:
         return
     
     bot.reply_to(message, REPLIES["help"])
-    bot.reply_to(message, REPLIES["commands"], reply_markup=create_start_markup())
+    if is_admin(message.from_user.id):
+        bot.reply_to(message, REPLIES["commands-admin"], reply_markup=create_start_markup(message.from_user.id))
+    else: 
+        bot.reply_to(message, REPLIES["commands-user"], reply_markup=create_start_markup(message.from_user.id))
+
+    print("{username} with id {id} called \"/help\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
+    

@@ -5,7 +5,7 @@ from database.dbworker import add_templates
 
 from loader import bot, engine, DEVS, ADMINS
 
-from functions.funcs import in_group, stop_talking, is_member
+from functions.funcs import in_group, stop_talking, is_member, is_admin
 from functions.keyboards import create_start_markup, create_stop_markup, create_unlogged_markup
 
 ALPHABET = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
@@ -26,7 +26,7 @@ def new_command(message: Message) -> None:
         bot.reply_to(message, REPLIES["not_logged"], reply_markup=create_unlogged_markup())
         return
     
-    if not (message.from_user.id in DEVS or message.from_user.id in ADMINS):
+    if not is_admin(message.from_user.id):
         bot.reply_to(message, REPLIES["rights_required"])
         return
 
@@ -60,4 +60,4 @@ def add_template(message: Message) -> None:
     user_template = str.rstrip(user_template)
 
     add_templates(user_template, engine)
-    bot.reply_to(message, REPLIES["template_created"], reply_markup=create_start_markup())
+    bot.reply_to(message, REPLIES["template_created"], reply_markup=create_start_markup(message.from_user.id))
