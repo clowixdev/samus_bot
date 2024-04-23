@@ -12,7 +12,7 @@ This telegram bot will be used as notifier for clan members. Also, this bot can 
     1. Add inline keyboards - DONE
     2. Add "/view" command to view added templates (show only first 20 symbols of generated template) - DONE
     3. Add player "profile" that will be filled during registration (fractions, crit dmg) - DONE
-    4. Add mentioning based on fraction
+    4. Add mentioning based on fraction - DONE
     5. Add "description" to template while creating to show it instead of full template
     6. Add base commands for Admin-Panel
     7. Add /bug command, that will ease bug-report process
