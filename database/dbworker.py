@@ -141,6 +141,42 @@ def get_usernames(engine: Engine) -> list:
     return usernames
 
 
+def get_fraction_usernames(fraction: str, engine: Engine) -> list:
+    """Generates list of usernames with needed fractions and returns it
+
+    Args:
+        fraction (str): Fraction that will be mentioned
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+
+    Returns:
+        list: List of users that was choosen
+    """
+    session = create_session(engine)
+    usernames = []
+    try:
+        match fraction:
+            case "/forest":
+                users = session.execute(select(User).filter(User.forest_fraction.is_(True))).all()
+            case "/magic":
+                users = session.execute(select(User).filter(User.magic_fraction.is_(True))).all()
+            case "/light":
+                users = session.execute(select(User).filter(User.light_fraction.is_(True))).all()
+            case "/tech":
+                users = session.execute(select(User).filter(User.tech_fraction.is_(True))).all()
+            case "/dark":
+                users = session.execute(select(User).filter(User.dark_fraction.is_(True))).all()
+
+        for user in users:
+            usernames.append(user[0].username)
+    except Exception as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
+    return usernames
+
+
 def gen_users(engine: Engine) -> list:
     """Generates list of all users and returns it
 

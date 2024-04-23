@@ -26,7 +26,6 @@ def is_member(message: Message) -> bool:
     return False
 
 
-
 def gen_templates() -> Tuple[str, int]:
     """Function that generates one entire message with templates
 
