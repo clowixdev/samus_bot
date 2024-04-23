@@ -3,10 +3,9 @@ from telebot.types import Message
 from database.msg_templates import REPLIES
 from database.dbworker import get_usernames
 
-from functions.funcs import is_member, in_group, is_admin
-from functions.keyboards import create_unlogged_markup
+from functions.funcs import in_group, is_admin
 
-from loader import bot, engine, DEVS, ADMINS
+from loader import bot, engine
 
 
 @bot.message_handler(commands=["everyone"])

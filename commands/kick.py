@@ -3,7 +3,7 @@ from telebot.types import Message
 from database.msg_templates import REPLIES
 from database.dbworker import get_user, delete_user
 
-from loader import bot, engine, CHATS, ADMINS, DEVS
+from loader import bot, engine, CHATS
 
 from functions.funcs import in_group, cut_username, is_admin
 

@@ -3,7 +3,7 @@ from telebot.types import Message
 from database.msg_templates import REPLIES
 from database.dbworker import add_templates
 
-from loader import bot, engine, DEVS, ADMINS
+from loader import bot, engine
 
 from functions.funcs import in_group, stop_talking, is_member, is_admin
 from functions.keyboards import create_start_markup, create_stop_markup, create_unlogged_markup

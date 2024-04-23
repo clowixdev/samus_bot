@@ -1,11 +1,11 @@
-from telebot.types import Message, ReplyKeyboardMarkup, KeyboardButton, PollAnswer
+from telebot.types import Message
 
 from database.msg_templates import REPLIES
 from database.dbworker import get_user
 
-from loader import bot, DEVS, ADMINS, engine
+from loader import bot, engine
 
-from functions.funcs import in_group, cut_username, gen_fractions, is_member, is_admin
+from functions.funcs import cut_username, gen_fractions, is_member, is_admin
 from functions.keyboards import create_start_markup, create_unlogged_markup
 
 @bot.message_handler(commands=["profile"])

@@ -1,9 +1,9 @@
-from telebot.types import Message, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from telebot.types import Message
 
 from database.msg_templates import REPLIES
 from database.dbworker import gen_users, get_templates
 
-from loader import bot, engine, DEVS, ADMINS
+from loader import bot, engine
 
 from functions.funcs import in_group, stop_talking, gen_templates, is_member, is_admin
 from functions.keyboards import create_all_markup, create_start_markup, create_stop_markup, create_unlogged_markup

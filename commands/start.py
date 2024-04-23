@@ -1,12 +1,12 @@
-from telebot.types import Message, ReplyKeyboardMarkup, KeyboardButton, PollAnswer
+from telebot.types import Message, PollAnswer
 
 from database.msg_templates import REPLIES
 from database.dbworker import get_user, add_user
 
 from loader import bot, engine, secret_word
 
-from functions.funcs import in_group, stop_talking, is_member, check_platform, check_critdmg, check_uid, create_dragon_poll
-from functions.keyboards import create_start_markup, create_help_markup, create_stop_markup, create_unlogged_markup
+from functions.funcs import in_group, stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll
+from functions.keyboards import create_start_markup, create_stop_markup, create_unlogged_markup
 
 userdata = []
 
