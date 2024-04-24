@@ -45,11 +45,16 @@ def get_user(user_id: int, username:str, engine: Engine) -> User:
     """
     session = create_session(engine)
     try:
-        user = session.query(User).filter_by(id=user_id).first()
-        if not user:
-            return None
-        session.add(user)
-        session.commit()
+        if user_id != None:
+            user = session.query(User).filter_by(id=user_id).first()
+            if not user:
+                return None
+        else:
+            user = session.query(User).filter_by(username=username).first()
+            if not user:
+                return None
+
+        session.expunge(user)
     except BaseException as e:
         print(e)
         session.rollback()
@@ -58,18 +63,29 @@ def get_user(user_id: int, username:str, engine: Engine) -> User:
 
     return user
 
-def add_user(user_id: int, username:str, ingame_name: str, engine: Engine) -> User:
+
+def add_user(userdata: list, engine: Engine) -> User:
     """Function that adds user with all attributes.
 
     Args:
-        user_id (int): ID of user thah defined by Telegram
-        username (str): username of user that is defined by user and could be changed
-        ingame_name (str): username in rush royale
+        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]]) 
         engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
     """
     session = create_session(engine)
     try:
-        user = User(id=user_id, username=username, rr_name=ingame_name)
+        user = User(
+            id=userdata[0], 
+            username=userdata[2], 
+            rr_name=userdata[1],
+            crit_dmg=userdata[3], 
+            uid=userdata[4], 
+            platform=userdata[5], 
+            forest_fraction=0 in userdata[6],
+            magic_fraction=1 in userdata[6],
+            light_fraction=2 in userdata[6],
+            tech_fraction=3 in userdata[6],
+            dark_fraction=4 in userdata[6]
+        )
         session.add(user)
         session.commit()
     except BaseException as e:
@@ -77,6 +93,29 @@ def add_user(user_id: int, username:str, ingame_name: str, engine: Engine) -> Us
         session.rollback()
     finally:
         session.close()
+
+
+def delete_user(user_id: int, engine: Engine) -> None:
+    """Deletes user from database
+
+    Args:
+        user_id (int): ID of user thah defined by Telegram
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+    """
+
+    session = create_session(engine)
+    try:
+        user = session.query(User).filter_by(id=user_id).first()
+        if not user:
+            return 
+        session.delete(user)
+        session.commit()
+    except BaseException as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
 
 def get_usernames(engine: Engine) -> list:
     """Generates list of all usernames and returns it
@@ -101,6 +140,43 @@ def get_usernames(engine: Engine) -> list:
 
     return usernames
 
+
+def get_fraction_usernames(fraction: str, engine: Engine) -> list:
+    """Generates list of usernames with needed fractions and returns it
+
+    Args:
+        fraction (str): Fraction that will be mentioned
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+
+    Returns:
+        list: List of users that was choosen
+    """
+    session = create_session(engine)
+    usernames = []
+    try:
+        match fraction:
+            case "/forest":
+                users = session.execute(select(User).filter(User.forest_fraction.is_(True))).all()
+            case "/magic":
+                users = session.execute(select(User).filter(User.magic_fraction.is_(True))).all()
+            case "/light":
+                users = session.execute(select(User).filter(User.light_fraction.is_(True))).all()
+            case "/tech":
+                users = session.execute(select(User).filter(User.tech_fraction.is_(True))).all()
+            case "/dark":
+                users = session.execute(select(User).filter(User.dark_fraction.is_(True))).all()
+
+        for user in users:
+            usernames.append(user[0].username)
+    except Exception as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
+    return usernames
+
+
 def gen_users(engine: Engine) -> list:
     """Generates list of all users and returns it
 
@@ -124,6 +200,7 @@ def gen_users(engine: Engine) -> list:
 
     return users
 
+
 def get_templates(engine: Engine) -> dict:
     """Function, that will generate dictionary from database table with templates
     Args:
@@ -146,6 +223,7 @@ def get_templates(engine: Engine) -> dict:
 
     return all_templates
 
+
 def add_templates(template: str, engine: Engine) -> None:
     """Function, that will update database table with templates after adding
 
@@ -162,6 +240,7 @@ def add_templates(template: str, engine: Engine) -> None:
         session.rollback()
     finally:
         session.close()
+
 
 def delete_template(template: str, engine: Engine) -> None:
     """Function that will delete template with matched template text

@@ -1,1 +1,1 @@
-from . import (all, delete, everyone, new, view, admin, base)
+from . import (all, delete, everyone, help, kick, new, start, view, profile, fraction_mentions, incorrect)
