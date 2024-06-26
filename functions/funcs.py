@@ -104,20 +104,7 @@ def stop_talking(message: Message) -> bool:
                 bot.reply_to(message, REPLIES["stop"], reply_markup=create_unlogged_markup())
             return True
         return False
-
-
-def in_group(message: Message) -> bool:
-    """Function that tells you whether bot called in group or not
-
-    Args:
-        message (Message): Object, that contains information of received message
-
-    Returns:
-        bool: Returns true if bot command was triggered in group else false
-    """
-    if message.from_user.id == message.chat.id:
-        return False
-    return True
+    
 
 def cut_username(string: str) -> str:
     """This function will find "@username" part of string and return it without "@"

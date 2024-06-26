@@ -4,27 +4,22 @@ from database.msg_templates import REPLIES
 
 from loader import bot
 
-from functions.funcs import in_group, gen_templates, is_member, is_admin, stop_talking, get_template
-from functions.keyboards import create_start_markup, create_unlogged_markup, create_view_markup
+from functions.funcs import gen_templates, stop_talking, get_template
+from functions.keyboards import create_start_markup, create_view_markup
+from functions.decorators import chat_required, member_required, admin_required
+
 
 @bot.message_handler(commands=["view"])
 @bot.message_handler(func=lambda message: message.text == "Просмотреть шаблоны 👀")
+@chat_required
+@member_required
+@admin_required
 def view_command(message: Message) -> None:
     """Handler that allows leaders to see all the existing templates
 
     Args:
         message (Message): Object, that contains information of received message
     """
-    if in_group(message):
-        return
-
-    if not is_member(message):
-        bot.reply_to(message, REPLIES["not_logged"], reply_markup=create_unlogged_markup())
-        return
-    
-    if not is_admin(message.from_user.id):
-        bot.reply_to(message, REPLIES["rights_required"])
-        return
 
     try:
         templates, templates_amt = gen_templates()

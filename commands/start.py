@@ -5,22 +5,21 @@ from database.dbworker import get_user, add_user
 
 from loader import bot, engine, secret_word
 
-from functions.funcs import in_group, stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll
+from functions.funcs import stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll
 from functions.keyboards import create_start_markup, create_stop_markup, create_unlogged_markup
+from functions.decorators import chat_required
 
 userdata = []
 
 @bot.message_handler(commands=["start"])
 @bot.message_handler(func=lambda message: message.text == "Начать ⭐")
+@chat_required
 def start_command(message: Message)-> None:
     """Handler that provides work of "/start" command.
 
     Args:
         message (Message): Object, that contains information of received message
     """
-
-    if in_group(message):
-        return
     
     bot.reply_to(message, REPLIES["start"])
     curr_user = get_user(message.from_user.id, message.from_user.username, engine)

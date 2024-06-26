@@ -48,6 +48,29 @@ def create_all_markup(templates_amt: int) -> ReplyKeyboardMarkup:
 
     return all_markup
 
+
+def create_view_markup(templates_amt: int) -> ReplyKeyboardMarkup:
+    """Fucntion that will create ReplyKeyboard for "/view" command and return it
+
+    Args:
+        templates_amt (int): amount of stored templates in database
+
+    Returns:
+        ReplyKeyboardMarkup: created markup for "/view" command
+    """
+    view_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+
+    for button in range(templates_amt):
+        markup_button = KeyboardButton(f"Шаблон номер {button+1} 💾")
+        view_markup.add(markup_button)
+
+    stop_button = KeyboardButton("Стоп ❌")
+
+    view_markup.add(stop_button)
+
+    return view_markup
+
+
 def create_del_markup(templates_amt: int) -> ReplyKeyboardMarkup:
     """Fucntion that will create ReplyKeyboard for "/del" command and return it
 
@@ -93,6 +116,29 @@ def create_stop_markup() -> ReplyKeyboardMarkup:
     stop_markup.add(stop_button)
 
     return stop_markup
+
+def create_group_markup() -> ReplyKeyboardMarkup:
+    """Fucntion that will create ReplyKeyboard for admins to mention anyone anytime
+
+    Returns:
+        ReplyKeyboardMarkup: created markup for unlogged user command
+    """
+    group_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    everyone_button = KeyboardButton("@all 📢")
+    forest_button = KeyboardButton("Лесной союз 🍃")
+    magic_button = KeyboardButton("Магический совет 🔮")
+    light_button = KeyboardButton("Королевство света ☀️")
+    tech_button = KeyboardButton("Техногенное общество 💡")
+    dark_button = KeyboardButton("Тёмные владения 🦇")
+
+    group_markup.add(
+        everyone_button, 
+        forest_button, 
+        magic_button, 
+        light_button, 
+        tech_button, 
+        dark_button
+    )
 
 def create_unlogged_markup() -> ReplyKeyboardMarkup:
     """Fucntion that will create ReplyKeyboard for unlogged user and return it
