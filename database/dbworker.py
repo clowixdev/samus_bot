@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List
 
 from sqlalchemy import create_engine, select, insert
 from sqlalchemy.engine import Engine
@@ -201,30 +201,55 @@ def gen_users(engine: Engine) -> list:
     return users
 
 
-def get_templates(engine: Engine) -> dict:
-    """Function, that will generate dictionary from database table with templates
+def get_template_by_id(template_id: int, engine: Engine) -> Template:
+    """Function, that will return Template object with the needed id
     Args:
+        template_id (int): template id
         engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
     
     Returns:
-        dict: dict of all templates stored in database
+        Template: Template object
     """
     session = create_session(engine)
-    all_templates = dict()
     try:
-        templates = session.execute(select(Template).order_by(Template.id)).all()
-        for id, template in enumerate(templates):
-            all_templates[id] = (f"{template[0].template}")
+        template = session.query(Template).filter_by(id=template_id).first()
+        if template is None:
+            return None
+        else:
+            session.expunge(template)
     except Exception as e:
         print(e)
         session.rollback()
     finally:
         session.close()
 
-    return all_templates
+    return template
 
 
-def add_templates(template: str, engine: Engine) -> None:
+def get_templates_descriptions(engine: Engine) -> dict:
+    """Function, that will generate dictionary from database table with templates descriptions
+    Args:
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+    
+    Returns:
+        dict: dict of all templates descriptions stored in database
+    """
+    session = create_session(engine)
+    all_descriptions = dict()
+    try:
+        templates = session.execute(select(Template).order_by(Template.id)).all()
+        for id, template in enumerate(templates):
+            all_descriptions[id] = (f"{template[0].description}")
+    except Exception as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
+    return all_descriptions
+
+
+def add_templates(template: str, photos: List[bytes], description: str, engine: Engine) -> None:
     """Function, that will update database table with templates after adding
 
     Args:
@@ -233,7 +258,20 @@ def add_templates(template: str, engine: Engine) -> None:
     """
     session = create_session(engine)
     try:
-        session.add(Template(template=template))
+        template_obj = Template(template=template, description=description)
+
+        if 0 < len(photos) and photos[0] is not None:
+            template_obj.photo1 = photos[0]
+        if 1 < len(photos) and photos[1] is not None:
+            template_obj.photo2 = photos[1]
+        if 2 < len(photos) and photos[2] is not None:
+            template_obj.photo3 = photos[2]
+        if 3 < len(photos) and photos[3] is not None:
+            template_obj.photo4 = photos[3]
+        if 4 < len(photos) and photos[4] is not None:
+            template_obj.photo5 = photos[4]
+
+        session.add(template_obj)
         session.commit()
     except BaseException as e:
         print(e)
