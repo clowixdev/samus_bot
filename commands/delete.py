@@ -23,7 +23,6 @@ def delete_command(message: Message) -> None:
     """
 
     try:
-        # TODO work with local id's, not with database id's
         templates, templates_amt = gen_templates()
         bot.reply_to(message, templates)
         bot.reply_to(message, REPLIES["del_template"], reply_markup=create_del_markup(templates_amt))

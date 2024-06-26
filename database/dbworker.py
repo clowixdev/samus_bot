@@ -153,17 +153,18 @@ def get_fraction_usernames(fraction: str, engine: Engine) -> list:
     """
     session = create_session(engine)
     usernames = []
+    users = []
     try:
         match fraction:
-            case "/forest":
+            case fraction if fraction in ["Лесной союз 🍃", "/forest"]:
                 users = session.execute(select(User).filter(User.forest_fraction.is_(True))).all()
-            case "/magic":
+            case fraction if fraction in ["Магический совет 🔮", "/magic"]:
                 users = session.execute(select(User).filter(User.magic_fraction.is_(True))).all()
-            case "/light":
+            case fraction if fraction in ["Королевство света ☀️", "/light"]:
                 users = session.execute(select(User).filter(User.light_fraction.is_(True))).all()
-            case "/tech":
+            case fraction if fraction in ["Техногенное общество 💡","/tech"]:
                 users = session.execute(select(User).filter(User.tech_fraction.is_(True))).all()
-            case "/dark":
+            case fraction if fraction in ["Тёмные владения 🦇", "/dark"]:
                 users = session.execute(select(User).filter(User.dark_fraction.is_(True))).all()
 
         for user in users:
@@ -201,29 +202,27 @@ def gen_users(engine: Engine) -> list[User]:
     return users
 
 
-def get_template_by_id(template_id: int, engine: Engine) -> Template:
-    """Function, that will return Template object with the needed id
+def get_templates(engine: Engine) -> Template:
+    """Function, that will return all Template objects
     Args:
-        template_id (int): template id
         engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
     
     Returns:
         Template: Template object
     """
     session = create_session(engine)
+    templates = []
     try:
-        template = session.query(Template).filter_by(id=template_id).first()
-        if template is None:
-            return None
-        else:
-            session.expunge(template)
+        all_templates = session.execute(select(Template).order_by(Template.id)).all()
+        for template in all_templates:
+            templates += template
     except Exception as e:
         print(e)
         session.rollback()
     finally:
         session.close()
 
-    return template
+    return templates
 
 
 def get_templates_descriptions(engine: Engine) -> dict:

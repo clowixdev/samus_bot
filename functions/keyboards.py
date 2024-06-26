@@ -140,6 +140,8 @@ def create_group_markup() -> ReplyKeyboardMarkup:
         dark_button
     )
 
+    return group_markup
+
 def create_unlogged_markup() -> ReplyKeyboardMarkup:
     """Fucntion that will create ReplyKeyboard for unlogged user and return it
 

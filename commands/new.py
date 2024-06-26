@@ -94,6 +94,12 @@ def add_description(message: Message, media_group_id: int, template: str) -> Non
 
     if stop_talking(message):
         return
+    
+    if len(media_groups[media_group_id]) > 5:
+        del(media_groups[media_group_id])
+        bot.reply_to(message, REPLIES["pictures_amt_error"], reply_markup=create_stop_markup())
+        new_command(message)
+        return
 
     add_templates(template, media_groups[media_group_id], message.text, engine)
     del(media_groups[media_group_id])

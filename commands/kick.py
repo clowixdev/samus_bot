@@ -6,7 +6,6 @@ from database.dbworker import get_user, delete_user
 from loader import bot, engine, CHATS
 
 from functions.funcs import cut_username
-from functions.keyboards import create_group_markup
 from functions.decorators import group_required, admin_required
 
 @bot.message_handler(commands=["kick"])
