@@ -177,7 +177,7 @@ def get_fraction_usernames(fraction: str, engine: Engine) -> list:
     return usernames
 
 
-def gen_users(engine: Engine) -> list:
+def gen_users(engine: Engine) -> list[User]:
     """Generates list of all users and returns it
 
     Args:

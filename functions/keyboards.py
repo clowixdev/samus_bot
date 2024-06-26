@@ -123,7 +123,7 @@ def create_group_markup() -> ReplyKeyboardMarkup:
     Returns:
         ReplyKeyboardMarkup: created markup for unlogged user command
     """
-    group_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+    group_markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
     everyone_button = KeyboardButton("@all 📢")
     forest_button = KeyboardButton("Лесной союз 🍃")
     magic_button = KeyboardButton("Магический совет 🔮")

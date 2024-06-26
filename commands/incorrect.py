@@ -5,7 +5,7 @@ from database.msg_templates import REPLIES
 from loader import bot
 
 from functions.keyboards import create_help_markup
-from functions.decorators import chat_required
+from functions.decorators import chat_required, group_required
 
 @bot.message_handler(func=lambda _: True)
 @chat_required

@@ -4,6 +4,7 @@ from database.msg_templates import REPLIES
 from database.dbworker import get_fraction_usernames
 
 from functions.decorators import group_required, admin_required
+from functions.keyboards import create_group_markup
 
 from loader import bot, engine
 
@@ -24,6 +25,7 @@ def everyone_command(message: Message) -> None:
         message (Message): Object, that contains information of received message
     """
 
+    bot.reply_to(message, REPLIES["before_mention"], reply_markup=create_group_markup())
     mention_message = ""
     usernames = get_fraction_usernames(message.text, engine)
     if usernames == []:
