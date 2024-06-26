@@ -62,7 +62,11 @@ def member_required(func: Callable) -> Any:
     def wrapper(*args, **kwargs):
         user_id_list = [user.id for user in gen_users(engine)]
         if args[0].from_user.id not in user_id_list:
-            bot.reply_to(args[0], REPLIES["not_logged"], reply_markup=create_unlogged_markup())
+            bot.reply_to(
+                args[0], 
+                REPLIES["not_logged"], 
+                reply_markup=create_unlogged_markup(),
+            )
             print(f"user with username @{args[0].from_user.username} and id {args[0].from_user.id} tried to use bot while unlogged")
             return
         
@@ -82,7 +86,11 @@ def admin_required(func: Callable) -> Any:
     @wraps(func)
     def wrapper(*args, **kwargs):
         if not (args[0].from_user.id in DEVS or args[0].from_user.id in ADMINS):
-            bot.reply_to(args[0], REPLIES["rights_required"], reply_markup=ReplyKeyboardRemove())
+            bot.reply_to(
+                args[0], 
+                REPLIES["rights_required"], 
+                reply_markup=ReplyKeyboardRemove(), 
+            )
             return
 
         return func(*args, **kwargs)

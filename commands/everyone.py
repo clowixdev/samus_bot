@@ -20,13 +20,18 @@ def everyone_command(message: Message) -> None:
         message (Message): Object, that contains information of received message
     """
 
-    bot.reply_to(message, REPLIES["before_mention"], reply_markup=create_group_markup())
+    bot.reply_to(
+        message, 
+        REPLIES["before_mention"], 
+        reply_markup=create_group_markup()
+    )
+
     mention_message = ""
     all_usernames = get_usernames(engine)
     for username in all_usernames:
         mention_message += f"@{username} "
     mention_message = str.rstrip(mention_message)
     mention_message += REPLIES["after_everyone"]
-    bot.send_message(message.chat.id, mention_message)
+    bot.reply_to(message, mention_message)
 
     print("{username} with id {id} called \"/everyone\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))

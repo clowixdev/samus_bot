@@ -18,18 +18,22 @@ from loader import bot, engine
         message.text == "Тёмные владения 🦇")
 @group_required
 @admin_required
-def everyone_command(message: Message) -> None:
+def fraction_command(message: Message) -> None:
     """This command will mention all registered users who choosed kingdom light
 
     Args:
         message (Message): Object, that contains information of received message
     """
 
-    bot.reply_to(message, REPLIES["before_mention"], reply_markup=create_group_markup())
+    bot.reply_to(
+        message, 
+        REPLIES["before_mention"], 
+        reply_markup=create_group_markup())
+    
     mention_message = ""
     usernames = get_fraction_usernames(message.text, engine)
     if usernames == []:
-        bot.send_message(message.chat.id, REPLIES["no_fraction_users"])
+        bot.reply_to(message, REPLIES["no_fraction_users"])
         return
 
     for username in usernames:
@@ -47,6 +51,6 @@ def everyone_command(message: Message) -> None:
         case fraction if fraction in ["Тёмные владения 🦇", "/dark"]:
             mention_message += REPLIES["dark_mention"]
 
-    bot.send_message(message.chat.id, mention_message)
+    bot.reply_to(message, mention_message)
 
     print("{username} with id {id} called \"{fraction}\" in {chat_id}".format(username=message.from_user.username, fraction=message.text, id=message.from_user.id, chat_id=message.chat.id))

@@ -4,7 +4,7 @@ from types import NoneType
 from telebot.types import Message
 
 from database.msg_templates import REPLIES
-from database.dbworker import get_templates_descriptions, gen_users, get_template_by_id
+from database.dbworker import get_templates_descriptions, gen_users, get_templates
 from database.models import User, Template
 
 from functions.keyboards import create_start_markup, create_unlogged_markup
@@ -48,7 +48,8 @@ def get_template(message: Message, recall_function: object) -> Template:
         recall_function(message)
         return
     
-    template = get_template_by_id(template_id, engine)
+    templates = get_templates(engine)
+    template = templates[template_id - 1]
     if template is None:
         bot.reply_to(message, REPLIES["invalid_key"])
         recall_function(message)
