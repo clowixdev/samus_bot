@@ -8,7 +8,9 @@ This telegram bot will be used as notifier for clan members. Also, this bot can 
     3. If user is not a member, ask him to auth or drop dialogue - DONE
     4. Show different keyboards for admin users and not-admin users - DONE
     5. Check pictures amount - DONE
-    6. work with local ids when deleting and chosing templates
+    6. work with local ids when deleting and chosing templates - DONE
+    7. spam defend
+    8. register check when entering platform
 
 ## TODO:
     1. Add inline keyboards - DONE
