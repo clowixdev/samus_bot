@@ -258,17 +258,17 @@ def add_templates(template: str, photos: List[bytes], description: str, engine: 
     session = create_session(engine)
     try:
         template_obj = Template(template=template, description=description)
-
-        if 0 < len(photos) and photos[0] is not None:
-            template_obj.photo1 = photos[0]
-        if 1 < len(photos) and photos[1] is not None:
-            template_obj.photo2 = photos[1]
-        if 2 < len(photos) and photos[2] is not None:
-            template_obj.photo3 = photos[2]
-        if 3 < len(photos) and photos[3] is not None:
-            template_obj.photo4 = photos[3]
-        if 4 < len(photos) and photos[4] is not None:
-            template_obj.photo5 = photos[4]
+        if photos != []:
+            if 0 < len(photos) and photos[0] is not None:
+                template_obj.photo1 = photos[0]
+            if 1 < len(photos) and photos[1] is not None:
+                template_obj.photo2 = photos[1]
+            if 2 < len(photos) and photos[2] is not None:
+                template_obj.photo3 = photos[2]
+            if 3 < len(photos) and photos[3] is not None:
+                template_obj.photo4 = photos[3]
+            if 4 < len(photos) and photos[4] is not None:
+                template_obj.photo5 = photos[4]
 
         session.add(template_obj)
         session.commit()

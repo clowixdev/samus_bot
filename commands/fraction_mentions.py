@@ -28,7 +28,8 @@ def fraction_command(message: Message) -> None:
     bot.reply_to(
         message, 
         REPLIES["before_mention"], 
-        reply_markup=create_group_markup())
+        reply_markup=create_group_markup()
+    )
     
     mention_message = ""
     usernames = get_fraction_usernames(message.text, engine)

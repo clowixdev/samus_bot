@@ -20,6 +20,7 @@ def help_command(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
+    #TODO help for groups
     
     bot.reply_to(message, REPLIES["help"])
     if is_admin(message.from_user.id):

@@ -68,7 +68,7 @@ def choose_template(message: Message) -> None:
                 if template.photo5 is not None:
                     media_group += [InputMediaPhoto(template.photo5)]
 
-                bot.send_media_group(message.from_user.id, media_group)
+                bot.send_media_group(user.id, media_group)
     bot.send_message(message.from_user.id, REPLIES["msg_sent"], reply_markup=create_start_markup(message.from_user.id))
 
 
@@ -86,6 +86,6 @@ def send_without_storing(message: Message) -> None:
         if user.id == message.from_user.id:
             continue
         else:
-            message = message.text or message.caption
-            bot.send_message(user.id, message)
+            message_text = message.text or message.caption
+            bot.send_message(user.id, message_text)
     bot.send_message(message.from_user.id, REPLIES["msg_sent"], reply_markup=create_start_markup(message.from_user.id))
