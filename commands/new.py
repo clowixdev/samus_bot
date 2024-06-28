@@ -22,15 +22,14 @@ media_groups = dict()
 @admin_required
 def gather_all_photos_in_media_group(message: Message) -> None:
 
-    if message.media_group_id is None:
-        return
+    media_group = message.media_group_id or message.message_id
 
-    if message.media_group_id not in media_groups:
-        media_groups[message.media_group_id] = []
+    if media_group not in media_groups:
+        media_groups[media_group] = []
 
     photo_info = bot.get_file(message.photo[-1].file_id)
     photo_bytes = bot.download_file(photo_info.file_path)
-    media_groups[message.media_group_id] += [photo_bytes]
+    media_groups[media_group] += [photo_bytes]
 
 
 @bot.message_handler(commands=["new"])
@@ -62,9 +61,15 @@ def add_template(message: Message) -> None:
         return
 
     if message.photo is not None:
+        print(message)
         photo_info = bot.get_file(message.photo[-1].file_id)
         photo_bytes = bot.download_file(photo_info.file_path)
-        media_groups[message.media_group_id] += [photo_bytes]
+        media_group = message.media_group_id or message.message_id
+
+        if media_group not in media_groups:
+            media_groups[media_group] = []
+
+        media_groups[media_group] += [photo_bytes]
 
     user_template = ""
     user_text = message.text or message.caption
@@ -80,7 +85,7 @@ def add_template(message: Message) -> None:
     
     user_template = str.rstrip(user_template)
 
-    bot.register_next_step_handler(message, add_description, message.media_group_id, user_template)
+    bot.register_next_step_handler(message, add_description, media_group, user_template)
     bot.reply_to(message, REPLIES["template_added"], reply_markup=create_stop_markup())
 
 
