@@ -61,7 +61,6 @@ def add_template(message: Message) -> None:
         return
 
     if message.photo is not None:
-        print(message)
         photo_info = bot.get_file(message.photo[-1].file_id)
         photo_bytes = bot.download_file(photo_info.file_path)
         media_group = message.media_group_id or message.message_id
