@@ -9,7 +9,7 @@ This telegram bot will be used as notifier for clan members. Also, this bot can 
     4. Show different keyboards for admin users and not-admin users - DONE
     5. Check pictures amount - DONE
     6. work with local ids when deleting and chosing templates - DONE
-    7. Create a spam defend decorator
+    7. Create a spam defend decorator - DONE
     8. register check when entering platform - DONE
 
 ## TODO:
