@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, List
 
 from sqlalchemy import create_engine, select, insert
 from sqlalchemy.engine import Engine
@@ -153,17 +153,18 @@ def get_fraction_usernames(fraction: str, engine: Engine) -> list:
     """
     session = create_session(engine)
     usernames = []
+    users = []
     try:
         match fraction:
-            case "/forest":
+            case fraction if fraction in ["Лесной союз 🍃", "/forest"]:
                 users = session.execute(select(User).filter(User.forest_fraction.is_(True))).all()
-            case "/magic":
+            case fraction if fraction in ["Магический совет 🔮", "/magic"]:
                 users = session.execute(select(User).filter(User.magic_fraction.is_(True))).all()
-            case "/light":
+            case fraction if fraction in ["Королевство света ☀️", "/light"]:
                 users = session.execute(select(User).filter(User.light_fraction.is_(True))).all()
-            case "/tech":
+            case fraction if fraction in ["Техногенное общество 💡","/tech"]:
                 users = session.execute(select(User).filter(User.tech_fraction.is_(True))).all()
-            case "/dark":
+            case fraction if fraction in ["Тёмные владения 🦇", "/dark"]:
                 users = session.execute(select(User).filter(User.dark_fraction.is_(True))).all()
 
         for user in users:
@@ -177,7 +178,7 @@ def get_fraction_usernames(fraction: str, engine: Engine) -> list:
     return usernames
 
 
-def gen_users(engine: Engine) -> list:
+def gen_users(engine: Engine) -> list[User]:
     """Generates list of all users and returns it
 
     Args:
@@ -201,30 +202,53 @@ def gen_users(engine: Engine) -> list:
     return users
 
 
-def get_templates(engine: Engine) -> dict:
-    """Function, that will generate dictionary from database table with templates
+def get_templates(engine: Engine) -> Template:
+    """Function, that will return all Template objects
     Args:
         engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
     
     Returns:
-        dict: dict of all templates stored in database
+        Template: Template object
     """
     session = create_session(engine)
-    all_templates = dict()
+    templates = []
     try:
-        templates = session.execute(select(Template).order_by(Template.id)).all()
-        for id, template in enumerate(templates):
-            all_templates[id] = (f"{template[0].template}")
+        all_templates = session.execute(select(Template).order_by(Template.id)).all()
+        for template in all_templates:
+            templates += template
     except Exception as e:
         print(e)
         session.rollback()
     finally:
         session.close()
 
-    return all_templates
+    return templates
 
 
-def add_templates(template: str, engine: Engine) -> None:
+def get_templates_descriptions(engine: Engine) -> dict:
+    """Function, that will generate dictionary from database table with templates descriptions
+    Args:
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+    
+    Returns:
+        dict: dict of all templates descriptions stored in database
+    """
+    session = create_session(engine)
+    all_descriptions = dict()
+    try:
+        templates = session.execute(select(Template).order_by(Template.id)).all()
+        for id, template in enumerate(templates):
+            all_descriptions[id] = (f"{template[0].description}")
+    except Exception as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
+    return all_descriptions
+
+
+def add_templates(template: str, photos: List[bytes], description: str, engine: Engine) -> None:
     """Function, that will update database table with templates after adding
 
     Args:
@@ -233,7 +257,20 @@ def add_templates(template: str, engine: Engine) -> None:
     """
     session = create_session(engine)
     try:
-        session.add(Template(template=template))
+        template_obj = Template(template=template, description=description)
+        if photos != []:
+            if 0 < len(photos) and photos[0] is not None:
+                template_obj.photo1 = photos[0]
+            if 1 < len(photos) and photos[1] is not None:
+                template_obj.photo2 = photos[1]
+            if 2 < len(photos) and photos[2] is not None:
+                template_obj.photo3 = photos[2]
+            if 3 < len(photos) and photos[3] is not None:
+                template_obj.photo4 = photos[3]
+            if 4 < len(photos) and photos[4] is not None:
+                template_obj.photo5 = photos[4]
+
+        session.add(template_obj)
         session.commit()
     except BaseException as e:
         print(e)

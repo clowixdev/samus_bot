@@ -1,0 +1,97 @@
+from functools import wraps
+
+from typing import Callable, Any
+
+from telebot.types import ReplyKeyboardRemove
+
+from database.msg_templates import REPLIES
+from database.dbworker import gen_users
+
+from loader import bot, DEVS, ADMINS, engine
+
+from functions.keyboards import create_unlogged_markup
+
+def chat_required(func: Callable) -> Any:
+    """Function decorator that requires called function to be called in chat
+
+    Args:
+        func (Callable): decorated function
+
+    Returns:
+        Any: Result of decorated function call
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if args[0].from_user.id != args[0].chat.id:
+            bot.reply_to(args[0], REPLIES["only_for_group"])
+            return
+
+        return func(*args, **kwargs)
+    return wrapper
+
+
+def group_required(func: Callable) -> Any:
+    """Function decorator that requires called function to be called in group
+
+    Args:
+        func (Callable): decorated function
+
+    Returns:
+        Any: Result of decorated function call
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if args[0].from_user.id == args[0].chat.id:
+            bot.reply_to(args[0], REPLIES["only_for_chat"])
+            return
+
+        return func(*args, **kwargs)
+    return wrapper
+
+
+def member_required(func: Callable) -> Any:
+    """Function decorator that requires user to be an member of clan
+
+    Args:
+        func (Callable): decorated function
+
+    Returns:
+        Any: Result of decorated function call
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        user_id_list = [user.id for user in gen_users(engine)]
+        if args[0].from_user.id not in user_id_list:
+            bot.reply_to(
+                args[0], 
+                REPLIES["not_logged"], 
+                reply_markup=create_unlogged_markup(),
+            )
+            print(f"user with username @{args[0].from_user.username} and id {args[0].from_user.id} tried to use bot while unlogged")
+            return
+        
+        return func(*args, **kwargs)
+    return wrapper
+
+
+def admin_required(func: Callable) -> Any:
+    """Function decorator that requires user to be an admin of clan
+
+    Args:
+        func (Callable): decorated function
+
+    Returns:
+        Any: Result of decorated function call
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if not (args[0].from_user.id in DEVS or args[0].from_user.id in ADMINS):
+            bot.reply_to(
+                args[0], 
+                REPLIES["rights_required"], 
+                reply_markup=ReplyKeyboardRemove(), 
+            )
+            return
+
+        return func(*args, **kwargs)
+    return wrapper

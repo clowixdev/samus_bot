@@ -5,24 +5,19 @@ from database.dbworker import get_user
 
 from loader import bot, engine
 
-from functions.funcs import cut_username, gen_fractions, is_member, is_admin, in_group
-from functions.keyboards import create_unlogged_markup
+from functions.funcs import cut_username, gen_fractions, is_admin
+from functions.decorators import chat_required, member_required
 
 @bot.message_handler(commands=["profile"])
 @bot.message_handler(func=lambda message: message.text == "Профиль 🪪")
+@chat_required
+@member_required
 def profile_command(message: Message)-> None:
     """Handler that provides work for "profile" function that will show your info
 
     Args:
         message (Message): Object, that contains information of received message
     """
-
-    if not is_member(message) and not in_group(message):
-        bot.reply_to(message, REPLIES["not_logged"], reply_markup=create_unlogged_markup())
-        return
-    
-    if not is_admin(message.from_user.id) and in_group(message):
-        return
     
     username = cut_username(message.text)
     if username == None:

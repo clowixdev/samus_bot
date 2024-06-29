@@ -6,7 +6,6 @@ from loader import bot
 
 from functions.keyboards import create_help_markup
 
-
 @bot.message_handler(func=lambda _: True)
 def incorrect_command(message: Message) -> None:
     """Handler that provides work with synonims of the word "Hello" 
@@ -15,5 +14,5 @@ def incorrect_command(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-    if message.chat.id == message.from_user.id:
+    if message.from_user.id == message.chat.id:
         bot.reply_to(message, REPLIES["incorrect"], reply_markup=create_help_markup())

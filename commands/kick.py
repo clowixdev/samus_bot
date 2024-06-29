@@ -5,23 +5,18 @@ from database.dbworker import get_user, delete_user
 
 from loader import bot, engine, CHATS
 
-from functions.funcs import in_group, cut_username, is_admin
+from functions.funcs import cut_username
+from functions.decorators import group_required, admin_required
 
 @bot.message_handler(commands=["kick"])
+@group_required
+@admin_required
 def kick_command(message: Message)-> None:
     """Handler that provides work of "/kick" command. User will be kicked from all chats and removed from base
 
     Args:
         message (Message): Object, that contains information of received message
     """
-
-    if not in_group(message):
-        bot.reply_to(message, REPLIES["only_for_chat"])
-        return
-    
-    if not is_admin(message.from_user.id):
-        bot.reply_to(message, REPLIES["rights_required"])
-        return
 
     username = cut_username(message.text)
     user_to_kick = get_user(None, username, engine)
@@ -35,3 +30,5 @@ def kick_command(message: Message)-> None:
             bot.kick_chat_member(chat, get_user(None, username, engine).id)
     
         delete_user(user_to_kick.id, engine)
+
+    print("{username} with id {id} called \"/kick\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))    
