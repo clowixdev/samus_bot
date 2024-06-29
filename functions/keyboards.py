@@ -1,4 +1,4 @@
-from telebot.types import Message, ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from telebot.types import ReplyKeyboardMarkup, KeyboardButton
 from loader import DEVS, ADMINS
 
 def create_start_markup(user_id: int) -> ReplyKeyboardMarkup:
@@ -17,15 +17,13 @@ def create_start_markup(user_id: int) -> ReplyKeyboardMarkup:
     del_button = KeyboardButton("Удалить шаблон 🗑️")
     view_button = KeyboardButton("Просмотреть шаблоны 👀")
     profile_button = KeyboardButton("Профиль 🪪")
-    edit_button = KeyboardButton("Изменить профиль ✏️")
     help_button = KeyboardButton("Помощь 📃")
 
-
     if (not user_id in DEVS) and (not user_id in ADMINS):
-        start_markup.add(help_button, profile_button)
+        start_markup.add(profile_button, help_button)
     else:
         start_markup.add(
-            all_button, new_button, del_button, view_button, profile_button, edit_button, help_button
+            all_button, new_button, del_button, view_button, profile_button, help_button
         )
 
     return start_markup
