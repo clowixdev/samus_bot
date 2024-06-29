@@ -1,4 +1,5 @@
 from telebot.types import Message
+from datetime import datetime
 
 from database.msg_templates import REPLIES
 from database.dbworker import get_user, delete_user
@@ -6,9 +7,10 @@ from database.dbworker import get_user, delete_user
 from loader import bot, engine, CHATS
 
 from functions.funcs import cut_username
-from functions.decorators import group_required, admin_required
+from functions.decorators import group_required, admin_required, spam_checker
 
 @bot.message_handler(commands=["kick"])
+@spam_checker
 @group_required
 @admin_required
 def kick_command(message: Message)-> None:
@@ -31,4 +33,4 @@ def kick_command(message: Message)-> None:
     
         delete_user(user_to_kick.id, engine)
 
-    print("{username} with id {id} called \"/kick\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))    
+    print("{date} {username} with id {id} called \"/kick\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))    

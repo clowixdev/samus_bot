@@ -1,4 +1,5 @@
 from telebot.types import Message
+from datetime import datetime
 
 from database.msg_templates import REPLIES
 from database.dbworker import delete_template
@@ -7,11 +8,12 @@ from loader import bot, engine
 
 from functions.funcs import stop_talking, gen_templates, get_template
 from functions.keyboards import create_del_markup, create_start_markup
-from functions.decorators import chat_required, member_required, admin_required
+from functions.decorators import chat_required, member_required, admin_required, spam_checker
 
 
 @bot.message_handler(commands=["del"])
 @bot.message_handler(func=lambda message: message.text == "Удалить шаблон 🗑️")
+@spam_checker
 @chat_required
 @member_required
 @admin_required
@@ -30,7 +32,7 @@ def delete_command(message: Message) -> None:
     except ValueError as e:
         bot.reply_to(message, REPLIES["empty_templates"], reply_markup=create_start_markup(message.from_user.id))
 
-    print("{username} with id {id} called \"/del\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
+    print("{date} {username} with id {id} called \"/del\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
 
 
 def del_template(message: Message) -> None:

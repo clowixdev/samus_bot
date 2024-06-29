@@ -1,8 +1,5 @@
-from typing import List
-
-from sqlalchemy.types import LargeBinary
-
 from telebot.types import Message
+from datetime import datetime
 
 from database.msg_templates import REPLIES
 from database.dbworker import add_templates
@@ -11,7 +8,7 @@ from loader import bot, engine
 
 from functions.funcs import stop_talking
 from functions.keyboards import create_start_markup, create_stop_markup
-from functions.decorators import chat_required, admin_required, member_required
+from functions.decorators import chat_required, admin_required, member_required, spam_checker
 
 ALPHABET = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
 
@@ -34,6 +31,7 @@ def gather_all_photos_in_media_group(message: Message) -> None:
 
 @bot.message_handler(commands=["new"])
 @bot.message_handler(func=lambda message: message.text == "Создать шаблон 📝")
+@spam_checker
 @chat_required
 @member_required
 @admin_required
@@ -47,7 +45,7 @@ def new_command(message: Message) -> None:
     bot.reply_to(message, REPLIES["add_template"], reply_markup=create_stop_markup())
     bot.register_next_step_handler(message, add_template)
 
-    print("{username} with id {id} called \"/new\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))    
+    print("{date} {username} with id {id} called \"/new\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))    
 
 
 def add_template(message: Message) -> None:

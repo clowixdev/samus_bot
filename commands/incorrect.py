@@ -5,7 +5,9 @@ from database.msg_templates import REPLIES
 from loader import bot
 
 from functions.keyboards import create_help_markup
+from functions.decorators import spam_checker
 
+@spam_checker
 @bot.message_handler(func=lambda _: True)
 def incorrect_command(message: Message) -> None:
     """Handler that provides work with synonims of the word "Hello" 

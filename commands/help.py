@@ -1,4 +1,5 @@
 from telebot.types import Message
+from datetime import datetime
 
 from database.msg_templates import REPLIES
 
@@ -6,11 +7,12 @@ from loader import bot
 
 from functions.funcs import is_admin
 from functions.keyboards import create_start_markup
-from functions.decorators import chat_required, member_required
+from functions.decorators import chat_required, member_required, spam_checker
 
 
 @bot.message_handler(commands=["help"])
 @bot.message_handler(func=lambda message: message.text == "Помощь 📃")
+@spam_checker
 @chat_required
 @member_required
 def help_command(message: Message) -> None:
@@ -28,5 +30,4 @@ def help_command(message: Message) -> None:
     else: 
         bot.reply_to(message, REPLIES["commands-user"], reply_markup=create_start_markup(message.from_user.id))
 
-    print("{username} with id {id} called \"/help\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
-    
+    print("{date} {username} with id {id} called \"/help\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))

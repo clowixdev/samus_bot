@@ -22,6 +22,8 @@ main_chat = os.environ.get("MAIN_CHAT_ID")
 
 CHATS = [int(main_chat)]
 
+last_message = dict()
+
 secret_word = os.environ.get("AUTH_WORD")
 engine = create_db_engine()
 bot = TeleBot(TOKEN)
