@@ -1,33 +1,28 @@
-from telebot.types import Message
+from telebot.types import Message, InputMediaPhoto
+from datetime import datetime
 
 from database.msg_templates import REPLIES
-from database.dbworker import gen_users, get_templates
+from database.dbworker import gen_users
 
 from loader import bot, engine
 
-from functions.funcs import in_group, stop_talking, gen_templates, is_member, is_admin
-from functions.keyboards import create_all_markup, create_start_markup, create_stop_markup, create_unlogged_markup
+from functions.funcs import stop_talking, gen_templates, get_template
+from functions.keyboards import create_all_markup, create_start_markup, create_stop_markup
+from functions.decorators import chat_required, member_required, admin_required, spam_checker
 
 
 @bot.message_handler(commands=["all"])
 @bot.message_handler(func=lambda message: message.text == "Рассылка клану 📨")
+@spam_checker
+@chat_required
+@member_required
+@admin_required
 def all_command(message: Message) -> None:
     """Handler that allows leaders to contact all clan members
 
     Args:
         message (Message): Object, that contains information of received message
     """
-
-    if in_group(message):
-        return
-
-    if not is_member(message):
-        bot.reply_to(message, REPLIES["not_logged"], reply_markup=create_unlogged_markup())
-        return
-    
-    if not is_admin(message.from_user.id):
-        bot.reply_to(message, REPLIES["rights_required"])
-        return
 
     try:
         templates, templates_amt = gen_templates()
@@ -37,7 +32,7 @@ def all_command(message: Message) -> None:
     except ValueError as e:
         bot.reply_to(message, REPLIES["empty_templates"], reply_markup=create_start_markup(message.from_user.id))
 
-    print("{username} with id {id} called \"/all\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
+    print("{date} {username} with id {id} called \"/all\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
 
 
 def choose_template(message: Message) -> None:
@@ -56,27 +51,26 @@ def choose_template(message: Message) -> None:
         bot.register_next_step_handler(message, send_without_storing)
         return
     
-    templates = get_templates(engine)
-    try:
-        if len(message.text) == 1:
-            template_id = int(message.text) - 1
-        else:
-            template_id = int(message.text[-3]) - 1
-    except ValueError as e:
-        bot.reply_to(message, REPLIES["invalid_key"])
-        all_command(message)
-        return
+    template = get_template(message, all_command)
 
     for user in gen_users(engine):
         if user.id == message.from_user.id:
             continue
         else:
-            try:
-                bot.send_message(user.id, templates[template_id].format(rr_name=user.rr_name))
-            except KeyError as e:
-                bot.reply_to(message, REPLIES["invalid_key"])
-                all_command(message)
-                return
+            if (template.photo1 is None):
+                bot.send_message(user.id, (template.template).format(rr_name=user.rr_name))
+            else:
+                media_group = [InputMediaPhoto(template.photo1, caption=template.template)]
+                if template.photo2 is not None:
+                    media_group += [InputMediaPhoto(template.photo2)]
+                if template.photo3 is not None:
+                    media_group += [InputMediaPhoto(template.photo3)]
+                if template.photo4 is not None:
+                    media_group += [InputMediaPhoto(template.photo4)]
+                if template.photo5 is not None:
+                    media_group += [InputMediaPhoto(template.photo5)]
+
+                bot.send_media_group(user.id, media_group)
     bot.send_message(message.from_user.id, REPLIES["msg_sent"], reply_markup=create_start_markup(message.from_user.id))
 
 
@@ -94,5 +88,6 @@ def send_without_storing(message: Message) -> None:
         if user.id == message.from_user.id:
             continue
         else:
-            bot.send_message(user.id, message.text)
+            message_text = message.text or message.caption
+            bot.send_message(user.id, message_text)
     bot.send_message(message.from_user.id, REPLIES["msg_sent"], reply_markup=create_start_markup(message.from_user.id))

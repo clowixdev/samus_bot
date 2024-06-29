@@ -1,10 +1,11 @@
 from typing import Tuple
+from types import NoneType
 
 from telebot.types import Message
 
 from database.msg_templates import REPLIES
-from database.dbworker import get_templates, gen_users
-from database.models import User
+from database.dbworker import get_templates_descriptions, gen_users, get_templates
+from database.models import User, Template
 
 from functions.keyboards import create_start_markup, create_unlogged_markup
 
@@ -14,7 +15,7 @@ def is_member(message: Message) -> bool:
     """Function will check if user that sending messages is a member of a clan
 
     Args:
-        message (Message): message (Message): Object, that contains information of received message
+        message (Message): Object, that contains information of received message
 
     Returns:
         bool: True if user is a member and False if he is not
@@ -26,14 +27,46 @@ def is_member(message: Message) -> bool:
     return False
 
 
+def get_template(message: Message, recall_function: object) -> Template:
+    """Function that handles all the errors while getting an template
+
+    Args:
+        message (Message): Object, that contains information of received message
+        recall_function (object): function that will be called, if error is detected
+
+    Returns:
+        Template: model of a template
+    """
+
+    try:
+        if len(message.text) == 1:
+            template_id = int(message.text)
+        else:
+            template_id = int(message.text[-3])
+    except ValueError as e:
+        bot.reply_to(message, REPLIES["invalid_key"])
+        recall_function(message)
+        return
+    
+    templates = get_templates(engine)
+    template = templates[template_id - 1]
+    if template is None:
+        bot.reply_to(message, REPLIES["invalid_key"])
+        recall_function(message)
+        return
+    
+    return template
+
+
 def gen_templates() -> Tuple[str, int]:
     """Function that generates one entire message with templates
 
     Returns:
         str: Generated message
+        int: Templates amount
     """
     message = "Все шаблоны:\n\n"
-    current_templates = get_templates(engine)
+    current_templates = get_templates_descriptions(engine)
     
     if current_templates == {}:
         raise ValueError
@@ -63,28 +96,16 @@ def stop_talking(message: Message) -> bool:
     Returns:
         bool: Returns true if message match "stop-word" else false
     """
-    if message.text.lower() == "стоп" or message.text == "Стоп ❌":
-        bot.clear_step_handler_by_chat_id(message.chat.id)
-        if is_member(message):
-            bot.reply_to(message, REPLIES["stop"], reply_markup=create_start_markup(message.from_user.id))
-        else:
-            bot.reply_to(message, REPLIES["stop"], reply_markup=create_unlogged_markup())
-        return True
-    return False
-
-
-def in_group(message: Message) -> bool:
-    """Function that tells you whether bot called in group or not
-
-    Args:
-        message (Message): Object, that contains information of received message
-
-    Returns:
-        bool: Returns true if bot command was triggered in group else false
-    """
-    if message.from_user.id == message.chat.id:
+    if type(message.text) != NoneType:
+        if message.text.lower() == "стоп" or message.text == "Стоп ❌":
+            bot.clear_step_handler_by_chat_id(message.chat.id)
+            if is_member(message):
+                bot.reply_to(message, REPLIES["stop"], reply_markup=create_start_markup(message.from_user.id))
+            else:
+                bot.reply_to(message, REPLIES["stop"], reply_markup=create_unlogged_markup())
+            return True
         return False
-    return True
+    
 
 def cut_username(string: str) -> str:
     """This function will find "@username" part of string and return it without "@"
@@ -118,7 +139,7 @@ def check_platform(str: str) -> None:
     Raises:
         ValueError: raises ValueError in case platform is incorrect
     """
-    if (str != "Android") and (str != "Iphone"):
+    if (str.lower() != "android") and (str.lower() != "iphone"):
         raise ValueError
 
 def check_uid(uid: int) -> None:

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String, Boolean, LargeBinary
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -32,3 +32,9 @@ class Template(Base):
     __tablename__ = "template"
     id = Column(Integer, primary_key=True)
     template = Column(String)
+    photo1 = Column(LargeBinary)
+    photo2 = Column(LargeBinary)
+    photo3 = Column(LargeBinary)
+    photo4 = Column(LargeBinary)
+    photo5 = Column(LargeBinary)
+    description = Column(String)

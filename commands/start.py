@@ -1,26 +1,27 @@
 from telebot.types import Message, PollAnswer
+from datetime import datetime
 
 from database.msg_templates import REPLIES
 from database.dbworker import get_user, add_user
 
 from loader import bot, engine, secret_word
 
-from functions.funcs import in_group, stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll
+from functions.funcs import stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll
 from functions.keyboards import create_start_markup, create_stop_markup, create_unlogged_markup
+from functions.decorators import chat_required, spam_checker
 
 userdata = []
 
 @bot.message_handler(commands=["start"])
 @bot.message_handler(func=lambda message: message.text == "Начать ⭐")
+@spam_checker
+@chat_required
 def start_command(message: Message)-> None:
     """Handler that provides work of "/start" command.
 
     Args:
         message (Message): Object, that contains information of received message
     """
-
-    if in_group(message):
-        return
     
     bot.reply_to(message, REPLIES["start"])
     curr_user = get_user(message.from_user.id, message.from_user.username, engine)
@@ -30,7 +31,7 @@ def start_command(message: Message)-> None:
     else:
         bot.reply_to(message, REPLIES["logged"].format(rr_name=curr_user.rr_name), reply_markup=create_start_markup(message.from_user.id))
 
-    print("{username} with id {id} called \"/start\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
+    print("{date} {username} with id {id} called \"/start\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
 
 
 def auth_member(message: Message) -> None:
