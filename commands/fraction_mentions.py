@@ -1,9 +1,10 @@
 from telebot.types import Message
+from datetime import datetime
 
 from database.msg_templates import REPLIES
 from database.dbworker import get_fraction_usernames
 
-from functions.decorators import group_required, admin_required
+from functions.decorators import group_required, admin_required, spam_checker
 from functions.keyboards import create_group_markup
 
 from loader import bot, engine
@@ -16,6 +17,7 @@ from loader import bot, engine
         message.text == "Королевство света ☀️" or
         message.text == "Техногенное общество 💡" or
         message.text == "Тёмные владения 🦇")
+@spam_checker
 @group_required
 @admin_required
 def fraction_command(message: Message) -> None:
@@ -54,4 +56,4 @@ def fraction_command(message: Message) -> None:
 
     bot.reply_to(message, mention_message)
 
-    print("{username} with id {id} called \"{fraction}\" in {chat_id}".format(username=message.from_user.username, fraction=message.text, id=message.from_user.id, chat_id=message.chat.id))
+    print("{date} {username} with id {id} called \"{fraction}\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, fraction=message.text, id=message.from_user.id, chat_id=message.chat.id))

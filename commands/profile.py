@@ -1,4 +1,5 @@
 from telebot.types import Message
+from datetime import datetime
 
 from database.msg_templates import REPLIES
 from database.dbworker import get_user
@@ -6,10 +7,11 @@ from database.dbworker import get_user
 from loader import bot, engine
 
 from functions.funcs import cut_username, gen_fractions, is_admin
-from functions.decorators import chat_required, member_required
+from functions.decorators import chat_required, member_required, spam_checker
 
 @bot.message_handler(commands=["profile"])
 @bot.message_handler(func=lambda message: message.text == "Профиль 🪪")
+@spam_checker
 @chat_required
 @member_required
 def profile_command(message: Message)-> None:
@@ -40,4 +42,4 @@ def profile_command(message: Message)-> None:
         fractions=gen_fractions(user)
     ))
 
-    print("{username} with id {id} called \"/profile\" in {chat_id}".format(username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
+    print("{date} {username} with id {id} called \"/profile\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))

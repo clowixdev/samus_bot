@@ -1,4 +1,5 @@
 from functools import wraps
+from time import time
 
 from typing import Callable, Any
 
@@ -7,7 +8,7 @@ from telebot.types import ReplyKeyboardRemove
 from database.msg_templates import REPLIES
 from database.dbworker import gen_users
 
-from loader import bot, DEVS, ADMINS, engine
+from loader import bot, DEVS, ADMINS, engine, last_message
 
 from functions.keyboards import create_unlogged_markup
 
@@ -92,6 +93,26 @@ def admin_required(func: Callable) -> Any:
                 reply_markup=ReplyKeyboardRemove(), 
             )
             return
+        return func(*args, **kwargs)
+    return wrapper
 
+
+def spam_checker(func: Callable) -> Any:
+    """Function decorator that will not handle message if it is spamming
+
+    Args:
+        func (Callable): decorated function
+
+    Returns:
+        Any: Result of decorated function call
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if args[0].from_user.id not in last_message:
+            last_message[args[0].from_user.id] = 0
+        if int(time()) - last_message[args[0].from_user.id] < 0.6:
+            return
+
+        last_message[args[0].from_user.id] = int(time())
         return func(*args, **kwargs)
     return wrapper

@@ -139,7 +139,7 @@ def check_platform(str: str) -> None:
     Raises:
         ValueError: raises ValueError in case platform is incorrect
     """
-    if (str != "Android") and (str != "Iphone"):
+    if (str.lower() != "android") and (str.lower() != "iphone"):
         raise ValueError
 
 def check_uid(uid: int) -> None:
