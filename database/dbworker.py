@@ -44,6 +44,7 @@ def get_user(user_id: int, username:str, engine: Engine) -> User:
         user (User): An user entity
     """
     session = create_session(engine)
+    user = []
     try:
         if user_id != None:
             user = session.query(User).filter_by(id=user_id).first()
@@ -78,14 +79,19 @@ def add_user(userdata: list, engine: Engine) -> User:
             username=userdata[2], 
             rr_name=userdata[1],
             crit_dmg=userdata[3], 
-            uid=userdata[4], 
+            uid=userdata[4],
             platform=userdata[5], 
             forest_fraction=0 in userdata[6],
             magic_fraction=1 in userdata[6],
             light_fraction=2 in userdata[6],
             tech_fraction=3 in userdata[6],
-            dark_fraction=4 in userdata[6]
+            dark_fraction=4 in userdata[6],
+            banshee_pawn=0 in userdata[7],
+            tesla_pawn=1 in userdata[7],
+            robot_pawn=2 in userdata[7],
+            panda_pawn=3 in userdata[7]
         )
+
         session.add(user)
         session.commit()
     except BaseException as e:
@@ -166,6 +172,41 @@ def get_fraction_usernames(fraction: str, engine: Engine) -> list:
                 users = session.execute(select(User).filter(User.tech_fraction.is_(True))).all()
             case fraction if fraction in ["Тёмные владения 🦇", "/dark"]:
                 users = session.execute(select(User).filter(User.dark_fraction.is_(True))).all()
+
+        for user in users:
+            usernames.append(user[0].username)
+    except Exception as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
+    return usernames
+
+
+def get_pawns_usernames(pawn: str, engine: Engine) -> list:
+    """Generates list of usernames with needed pawns and returns it
+
+    Args:
+        pawn (str): pawn that will be mentioned
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+
+    Returns:
+        list: List of users that was choosen
+    """
+    session = create_session(engine)
+    usernames = []
+    users = []
+    try:
+        match pawn:
+            case pawn if pawn in ["Банши 😈", "/banshee"]:
+                users = session.execute(select(User).filter(User.banshee_pawn.is_(True))).all()
+            case pawn if pawn in ["Тесла ⚡️", "/tesla"]:
+                users = session.execute(select(User).filter(User.tesla_pawn.is_(True))).all()
+            case pawn if pawn in ["Робот 🤖", "/robot"]:
+                users = session.execute(select(User).filter(User.robot_pawn.is_(True))).all()
+            case pawn if pawn in ["Панда 🐼","/panda"]:
+                users = session.execute(select(User).filter(User.panda_pawn.is_(True))).all()
 
         for user in users:
             usernames.append(user[0].username)

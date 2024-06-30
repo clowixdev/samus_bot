@@ -190,6 +190,30 @@ def create_dragon_poll() -> dict:
 
     return poll
 
+
+def create_pawns_poll() -> dict:
+    """Function that generates dictionary with all settings for poll
+
+    Returns:
+        dict: poll settings dictionary
+    """
+
+    poll = dict()
+
+    poll["question"] = REPLIES["add_pawns"]
+    poll["options"] = [
+        "Банши 😈",
+        "Тесла ⚡️",
+        "Робот 🤖",
+        "Панда 🐼",
+        "Таких нет 😓"
+    ]
+    poll["is_anonymous"] = False
+    poll["allow_multiple"] = True
+
+    return poll
+
+
 def gen_fractions(user: User) -> str:
     """Function will generate fraction message
 
@@ -202,17 +226,47 @@ def gen_fractions(user: User) -> str:
 
     fraction_msg = ""
     if user.forest_fraction:
-        fraction_msg += "Лесной союз 🍃\n"
+        fraction_msg += "\nЛесной союз 🍃"
     if user.magic_fraction:
-        fraction_msg += "Магический совет 🔮\n"
+        fraction_msg += "\nМагический совет 🔮"
     if user.light_fraction:
-        fraction_msg += "Королевство света ☀️\n"
+        fraction_msg += "\nКоролевство света ☀️"
     if user.tech_fraction:
-        fraction_msg += "Техногенное общество 💡\n"
+        fraction_msg += "\nТехногенное общество 💡"
     if user.dark_fraction:
-        fraction_msg += "Тёмные владения 🦇"
+        fraction_msg += "\nТёмные владения 🦇"
 
     return fraction_msg
+
+
+def gen_pawns(user: User) -> str:
+    """Function will generate pawns message
+
+    Args:
+        user (User): Object that stores all data about user
+
+    Returns:
+        str: message to implement into template
+    """
+
+    pawns_msg = ""
+    if user.banshee_pawn:
+        pawns_msg += "\nБанши 😈"
+    if user.tesla_pawn:
+        pawns_msg += "\nТесла ⚡️"
+    if user.robot_pawn:
+        pawns_msg += "\nРобот 🤖"
+    if user.panda_pawn:
+        pawns_msg += "\nПанда 🐼"
+    if sum(
+        [user.banshee_pawn,
+        user.tesla_pawn,
+        user.robot_pawn,
+        user.panda_pawn]
+    ) == 0:
+        pawns_msg += "\nНи одной особой пешки 😓"
+
+    return pawns_msg
 
 
 def is_admin(user_id: int) -> bool:

@@ -1,4 +1,5 @@
 from functools import wraps
+from datetime import datetime
 from time import time
 
 from typing import Callable, Any
@@ -68,7 +69,7 @@ def member_required(func: Callable) -> Any:
                 REPLIES["not_logged"], 
                 reply_markup=create_unlogged_markup(),
             )
-            print(f"user with username @{args[0].from_user.username} and id {args[0].from_user.id} tried to use bot while unlogged")
+            print(f"{datetime.now()} user with username @{args[0].from_user.username} and id {args[0].from_user.id} tried to use bot while unlogged")
             return
         
         return func(*args, **kwargs)
