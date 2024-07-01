@@ -21,7 +21,7 @@ This telegram bot will be used as notifier for clan members. Also, this bot can 
     6. Add picture handling that is sent with text when creating template or sending message immideatly - DONE
     7. Add group_chat keyboard (consist only fraction and everyone mentions) - DONE
     8. Add pawns mention (banshee, tesla, robot, panda) - DONE
-    9. Add ability to edit profile
+    9. Add ability to edit profile - DONE
     10. Add base commands for Admin-Panel
     11. Add /bug command, that will ease bug-report process
     12. Add strategies for different modifiers
