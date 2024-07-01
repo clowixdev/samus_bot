@@ -6,7 +6,7 @@ from database.dbworker import get_user, add_user
 
 from loader import bot, engine, secret_word
 
-from functions.funcs import stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll
+from functions.funcs import stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll, create_pawns_poll
 from functions.keyboards import create_start_markup, create_stop_markup, create_unlogged_markup
 from functions.decorators import chat_required, spam_checker
 
@@ -146,7 +146,7 @@ def add_platform(message: Message, userdata: list) -> None:
 
 
 @bot.poll_answer_handler()
-def add_fractions_poll(pollAnswer: PollAnswer) -> None:
+def add_poll_data(pollAnswer: PollAnswer) -> None:
     """Handler that will get all the answers and pass data to the next handler
 
     Args:
@@ -154,7 +154,10 @@ def add_fractions_poll(pollAnswer: PollAnswer) -> None:
         userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
     """
     userdata.append(pollAnswer.option_ids)
-    add_fractions(userdata)
+    if len(userdata) == 8:
+        add_fractions(userdata)
+    else:
+        add_event_pawns(userdata)
 
 
 def add_fractions(userdata: list) -> None:
@@ -166,7 +169,26 @@ def add_fractions(userdata: list) -> None:
     """
     bot.delete_message(userdata[1], userdata[0])
     userdata.pop(0)
+
+    poll = create_pawns_poll()
+    poll_id = bot.send_poll(userdata[0], poll["question"], options=poll["options"], \
+                is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"]).message_id
+    
+    userdata.insert(0, poll_id)
+
+
+def add_event_pawns(userdata: list) -> None:
+    """Handler that will create a poll and determine players event pawns, then add all stored data to database
+
+    Args:
+        message (Message): Object, that contains information of received message
+        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
+    """
+    bot.delete_message(userdata[1], userdata[0])
+    userdata.pop(0)
+
     bot.send_message(userdata[0], REPLIES["registration_passed"], reply_markup=create_start_markup(userdata[0]))
     bot.send_message(userdata[0], REPLIES["logged"].format(rr_name=userdata[1]), reply_markup=create_start_markup(userdata[0]))
 
     add_user(userdata, engine)
+
