@@ -134,7 +134,8 @@ def add_platform(message: Message, userdata: list) -> None:
             userdata.append(message.text.strip())
 
             poll = create_dragon_poll()
-            current_polls = ["start"]
+            global current_polls
+            current_polls = "start"
             poll_id = bot.send_poll(message.from_user.id, poll["question"], options=poll["options"], \
                         is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"]).message_id
             
@@ -144,24 +145,6 @@ def add_platform(message: Message, userdata: list) -> None:
         bot.reply_to(message, REPLIES["invalid_platform"], reply_markup=create_stop_markup())
         add_uid(message, userdata)
         return
-
-
-@bot.poll_answer_handler()
-def add_poll_data(pollAnswer: PollAnswer) -> None:
-    """Handler that will get all the answers and pass data to the next handler
-
-    Args:
-        message (Message): Object, that contains information of received message
-        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
-    """
-    if current_polls != "start":
-        return
-
-    userdata.append(pollAnswer.option_ids)
-    if len(userdata) == 8:
-        add_fractions(userdata)
-    else:
-        add_event_pawns(userdata)
 
 
 def add_fractions(userdata: list) -> None:
@@ -175,11 +158,27 @@ def add_fractions(userdata: list) -> None:
     userdata.pop(0)
 
     poll = create_pawns_poll()
+    global current_polls
+    current_polls = "start"
     poll_id = bot.send_poll(userdata[0], poll["question"], options=poll["options"], \
                 is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"]).message_id
     
     userdata.insert(0, poll_id)
 
+@bot.poll_answer_handler(func=lambda _: current_polls == "start")
+def add_poll_data(pollAnswer: PollAnswer) -> None:
+    """Handler that will get all the answers and pass data to the next handler
+
+    Args:
+        message (Message): Object, that contains information of received message
+        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
+    """
+
+    userdata.append(pollAnswer.option_ids)
+    if len(userdata) == 8:
+        add_fractions(userdata)
+    else:
+        add_event_pawns(userdata)
 
 def add_event_pawns(userdata: list) -> None:
     """Handler that will create a poll and determine players event pawns, then add all stored data to database

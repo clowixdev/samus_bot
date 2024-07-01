@@ -173,6 +173,7 @@ def edit_fractions_handler(message: Message) -> None:
     """
     bot.reply_to(message, REPLIES["edit_fractions"], reply_markup=ReplyKeyboardRemove())
     poll = create_dragon_poll()
+    global current_polls
     current_polls = "edit"
     poll_id = bot.send_poll(message.from_user.id, poll["question"], options=poll["options"], \
             is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"])
@@ -202,6 +203,7 @@ def edit_pawns_handler(message: Message) -> None:
     """
     bot.reply_to(message, REPLIES["edit_pawns"], reply_markup=ReplyKeyboardRemove())
     poll = create_pawns_poll()
+    global current_polls
     current_polls = "edit"
     poll_id = bot.send_poll(message.from_user.id, poll["question"], options=poll["options"], \
             is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"])
@@ -219,7 +221,7 @@ def edit_pawns(poll_answers: list, user_id: int) -> None:
     bot.send_message(user_id, REPLIES["edit_pawns_ok"], reply_markup=create_start_markup(user_id))
 
 
-@bot.poll_answer_handler()
+@bot.poll_answer_handler(func=lambda _: current_polls == "edit")
 def edit_polls(pollAnswer: PollAnswer) -> None:
     """This function will catch the poll answers and redirect it to correct functions
 
@@ -227,9 +229,6 @@ def edit_polls(pollAnswer: PollAnswer) -> None:
         pollAnswer (PollAnswer): Object, that contains information about catched poll
         poll_question (str): poll question
     """
-
-    if current_polls != "edit":
-        return
 
     dragon_poll_question = create_dragon_poll()["question"]
     pawn_poll_question = create_pawns_poll()["question"]
