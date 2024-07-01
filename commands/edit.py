@@ -1,7 +1,7 @@
 from telebot.types import Message, PollAnswer, ReplyKeyboardRemove
 from datetime import datetime
 
-from loader import bot, engine
+from loader import bot, engine, current_polls
 
 from database.msg_templates import REPLIES
 from database.dbworker import edit_user_rrname, edit_user_critdmg, edit_user_uid, edit_user_platform, edit_user_fractions, edit_user_pawns
@@ -173,6 +173,7 @@ def edit_fractions_handler(message: Message) -> None:
     """
     bot.reply_to(message, REPLIES["edit_fractions"], reply_markup=ReplyKeyboardRemove())
     poll = create_dragon_poll()
+    current_polls = "edit"
     poll_id = bot.send_poll(message.from_user.id, poll["question"], options=poll["options"], \
             is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"])
     polls[message.from_user.id] = [poll["question"], poll_id.message_id]
@@ -201,6 +202,7 @@ def edit_pawns_handler(message: Message) -> None:
     """
     bot.reply_to(message, REPLIES["edit_pawns"], reply_markup=ReplyKeyboardRemove())
     poll = create_pawns_poll()
+    current_polls = "edit"
     poll_id = bot.send_poll(message.from_user.id, poll["question"], options=poll["options"], \
             is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"])
     polls[message.from_user.id] = [poll["question"], poll_id.message_id]
@@ -225,6 +227,10 @@ def edit_polls(pollAnswer: PollAnswer) -> None:
         pollAnswer (PollAnswer): Object, that contains information about catched poll
         poll_question (str): poll question
     """
+
+    if current_polls != "edit":
+        return
+
     dragon_poll_question = create_dragon_poll()["question"]
     pawn_poll_question = create_pawns_poll()["question"]
 
