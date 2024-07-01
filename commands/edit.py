@@ -1,4 +1,4 @@
-from telebot.types import Message, PollAnswer
+from telebot.types import Message, PollAnswer, ReplyKeyboardRemove
 from datetime import datetime
 
 from loader import bot, engine
@@ -148,6 +148,10 @@ def edit_platform(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
+
+    if stop_talking(message):
+        return
+
     try:
         check_platform(message.text)
         edit_user_platform(message.text, message.from_user.id, engine)
@@ -167,7 +171,7 @@ def edit_fractions_handler(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-    bot.reply_to(message, REPLIES["edit_fractions"], reply_markup=create_stop_markup())
+    bot.reply_to(message, REPLIES["edit_fractions"], reply_markup=ReplyKeyboardRemove())
     poll = create_dragon_poll()
     poll_id = bot.send_poll(message.from_user.id, poll["question"], options=poll["options"], \
             is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"])
@@ -195,7 +199,7 @@ def edit_pawns_handler(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-    bot.reply_to(message, REPLIES["edit_pawns"], reply_markup=create_stop_markup())
+    bot.reply_to(message, REPLIES["edit_pawns"], reply_markup=ReplyKeyboardRemove())
     poll = create_pawns_poll()
     poll_id = bot.send_poll(message.from_user.id, poll["question"], options=poll["options"], \
             is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"])
