@@ -21,7 +21,7 @@ def create_start_markup(user_id: int) -> ReplyKeyboardMarkup:
     help_button = KeyboardButton("Помощь 📃")
 
     if (not user_id in DEVS) and (not user_id in ADMINS):
-        start_markup.add(edit_button, profile_button, help_button)
+        start_markup.add(profile_button, edit_button, help_button)
     else:
         start_markup.add(
             all_button, new_button, del_button, view_button, profile_button, edit_button, help_button
@@ -42,7 +42,8 @@ def create_edit_markup() -> ReplyKeyboardMarkup:
     uid_button = KeyboardButton("UID 📄")
     fractions_button = KeyboardButton("Фракции в драконе 🔮")
     platfrom_button = KeyboardButton("Платформа 📱")
-    dragonpawns_button = KeyboardButton("Ивент. пешки 🎉")
+    pawns_button = KeyboardButton("Особые пешки 🎉")
+    nothing_button = KeyboardButton("Ничего ❌")
 
     edit_markup.add(
         gamename_button,
@@ -50,7 +51,8 @@ def create_edit_markup() -> ReplyKeyboardMarkup:
         uid_button,
         fractions_button,
         platfrom_button,
-        dragonpawns_button
+        pawns_button,
+        nothing_button
     )
 
     return edit_markup

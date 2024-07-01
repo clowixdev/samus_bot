@@ -337,3 +337,152 @@ def delete_template(template: str, engine: Engine) -> None:
         session.rollback()
     finally:
         session.close()
+
+
+def edit_user_rrname(new_name: str, user_id: int, engine: Engine) -> None:
+    """This function edit's user ingame name
+
+    Args:
+        new_name (str): New user's ingame name
+        user_id (int): user's telegram id
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+    """
+    session = create_session(engine)
+    try:
+        user = session.query(User).filter_by(id=user_id).first()
+        if not user:
+            return 
+        user.rr_name = new_name
+        session.add(user)
+        session.commit()
+    except BaseException as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
+
+def edit_user_critdmg(new_crit: int, user_id: int, engine: Engine) -> None:
+    """Function that will edit user's crit dmg
+
+    Args:
+        new_crit (int): new crit dmg value
+        user_id (int): user's telegram id
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+    """
+    session = create_session(engine)
+    try:
+        user = session.query(User).filter_by(id=user_id).first()
+        if not user:
+            return 
+        user.crit_dmg = new_crit
+        session.add(user)
+        session.commit()
+    except BaseException as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
+
+def edit_user_uid(new_uid: int, user_id: int, engine: Engine) -> None:
+    """Function that will edit user's crit dmg
+
+    Args:
+        new_uid (int): new uid value
+        user_id (int): user's telegram id
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+    """
+    session = create_session(engine)
+    try:
+        user = session.query(User).filter_by(id=user_id).first()
+        if not user:
+            return 
+        user.uid = new_uid
+        session.add(user)
+        session.commit()
+    except BaseException as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
+
+def edit_user_platform(new_platform: str, user_id: int, engine: Engine) -> None:
+    """This function will edit user's platform
+
+    Args:
+        new_platform (str): user's new platform
+        user_id (int): user's telegram id
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+    """
+    session = create_session(engine)
+    try:
+        user = session.query(User).filter_by(id=user_id).first()
+        if not user:
+            return 
+        user.platform = new_platform
+        session.add(user)
+        session.commit()
+    except BaseException as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
+
+def edit_user_fractions(new_fractions: list, user_id: int, engine: Engine) -> None:
+    """This function will edit user's fractions
+
+    Args:
+        new_fractions (list): user's new fractions
+        user_id (int): user's telegram id
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+    """
+    session = create_session(engine)
+    try:
+        user = session.query(User).filter_by(id=user_id).first()
+        if not user:
+            return 
+        
+        user.forest_fraction = 0 in new_fractions
+        user.magic_fraction = 1 in new_fractions
+        user.light_fraction = 2 in new_fractions
+        user.tech_fraction= 3 in new_fractions
+        user.dark_fraction= 4 in new_fractions
+
+        session.add(user)
+        session.commit()
+    except BaseException as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
+
+def edit_user_pawns(new_pawns: list, user_id: int, engine: Engine) -> None:
+    """This function will edit user's pawns
+
+    Args:
+        new_pawns (list): user's new pawns
+        user_id (int): user's telegram id
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+    """
+    session = create_session(engine)
+    try:
+        user = session.query(User).filter_by(id=user_id).first()
+        if not user:
+            return 
+        
+        user.banshee_pawn = 0 in new_pawns
+        user.tesla_pawn = 1 in new_pawns
+        user.robot_pawn = 2 in new_pawns
+        user.panda_pawn = 3 in new_pawns
+        
+        session.add(user)
+        session.commit()
+    except BaseException as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()

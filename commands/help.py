@@ -25,13 +25,13 @@ def help_command(message: Message) -> None:
     bot.reply_to(message, REPLIES["help"])
     if is_admin(message.from_user.id):
         if message.from_user.id != message.chat.id:
-            bot.reply_to(message, REPLIES["commands-admin-group"], reply_markup=create_group_markup())
+            bot.reply_to(message, REPLIES["commands_admin_group"], reply_markup=create_group_markup())
         else:
-            bot.reply_to(message, REPLIES["commands-admin-chat"], reply_markup=create_start_markup(message.from_user.id))
+            bot.reply_to(message, REPLIES["commands_admin_chat"], reply_markup=create_start_markup(message.from_user.id))
     else:
         if message.from_user.id != message.chat.id:
-            bot.reply_to(message, REPLIES["commands-user-group"])
+            bot.reply_to(message, REPLIES["commands_user_group"])
         else:
-            bot.reply_to(message, REPLIES["commands-user-chat"], reply_markup=create_start_markup(message.from_user.id))
+            bot.reply_to(message, REPLIES["commands_user_chat"], reply_markup=create_start_markup(message.from_user.id))
 
     print("{date} {username} with id {id} called \"/help\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
