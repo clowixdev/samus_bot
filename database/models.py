@@ -22,6 +22,10 @@ class User(Base):
     light_fraction = Column(Boolean)
     tech_fraction = Column(Boolean)
     dark_fraction = Column(Boolean)
+    banshee_pawn = Column(Boolean)
+    tesla_pawn = Column(Boolean)
+    robot_pawn = Column(Boolean)
+    panda_pawn = Column(Boolean)
 
 class Template(Base):
     """SQLAlchemy model of template

@@ -6,7 +6,7 @@ from database.dbworker import get_user
 
 from loader import bot, engine
 
-from functions.funcs import cut_username, gen_fractions, is_admin
+from functions.funcs import cut_username, gen_fractions, is_admin, gen_pawns
 from functions.decorators import chat_required, member_required, spam_checker
 
 @bot.message_handler(commands=["profile"])
@@ -39,7 +39,8 @@ def profile_command(message: Message)-> None:
         crit_dmg=user.crit_dmg, 
         uid=user.uid,
         platform=user.platform, 
-        fractions=gen_fractions(user)
+        fractions=gen_fractions(user),
+        pawns=gen_pawns(user)
     ))
 
     print("{date} {username} with id {id} called \"/profile\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))

@@ -17,16 +17,45 @@ def create_start_markup(user_id: int) -> ReplyKeyboardMarkup:
     del_button = KeyboardButton("Удалить шаблон 🗑️")
     view_button = KeyboardButton("Просмотреть шаблоны 👀")
     profile_button = KeyboardButton("Профиль 🪪")
+    edit_button = KeyboardButton("Изменить профиль ✏️")
     help_button = KeyboardButton("Помощь 📃")
 
     if (not user_id in DEVS) and (not user_id in ADMINS):
-        start_markup.add(profile_button, help_button)
+        start_markup.add(profile_button, edit_button, help_button)
     else:
         start_markup.add(
-            all_button, new_button, del_button, view_button, profile_button, help_button
+            all_button, new_button, del_button, view_button, profile_button, edit_button, help_button
         )
 
     return start_markup
+
+def create_edit_markup() -> ReplyKeyboardMarkup:
+    """Fucntion that will create ReplyKeyboard for "/edit" command and return it
+
+    Returns:
+        ReplyKeyboardMarkup: created markup for "/edit" command
+    """
+    edit_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+
+    gamename_button = KeyboardButton("Никнейм 🪪")
+    crit_button = KeyboardButton("Крит. урон 🔪")
+    uid_button = KeyboardButton("UID 📄")
+    fractions_button = KeyboardButton("Фракции в драконе 🔮")
+    platfrom_button = KeyboardButton("Платформа 📱")
+    pawns_button = KeyboardButton("Особые пешки 🎉")
+    nothing_button = KeyboardButton("Ничего ❌")
+
+    edit_markup.add(
+        gamename_button,
+        crit_button,
+        uid_button,
+        fractions_button,
+        platfrom_button,
+        pawns_button,
+        nothing_button
+    )
+
+    return edit_markup
 
 def create_all_markup(templates_amt: int) -> ReplyKeyboardMarkup:
     """Fucntion that will create ReplyKeyboard for "/all" command and return it
@@ -126,12 +155,17 @@ def create_group_markup() -> ReplyKeyboardMarkup:
         ReplyKeyboardMarkup: created markup for unlogged user command
     """
     group_markup = ReplyKeyboardMarkup(resize_keyboard=True, selective=True)
+
     everyone_button = KeyboardButton("@all 📢")
     forest_button = KeyboardButton("Лесной союз 🍃")
     magic_button = KeyboardButton("Магический совет 🔮")
     light_button = KeyboardButton("Королевство света ☀️")
     tech_button = KeyboardButton("Техногенное общество 💡")
     dark_button = KeyboardButton("Тёмные владения 🦇")
+    banshee_button = KeyboardButton("Банши 😈")
+    tesla_button = KeyboardButton("Тесла ⚡️")
+    robot_button = KeyboardButton("Робот 🤖")
+    panda_button = KeyboardButton("Панда 🐼")
 
     group_markup.add(
         everyone_button, 
@@ -139,7 +173,11 @@ def create_group_markup() -> ReplyKeyboardMarkup:
         magic_button, 
         light_button, 
         tech_button, 
-        dark_button
+        dark_button,
+        banshee_button,
+        tesla_button,
+        robot_button,
+        panda_button
     )
 
     return group_markup
