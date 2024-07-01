@@ -4,7 +4,7 @@ from datetime import datetime
 from database.msg_templates import REPLIES
 from database.dbworker import get_user, add_user
 
-from loader import bot, engine, secret_word
+from loader import bot, engine, secret_word, current_polls
 
 from functions.funcs import stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll, create_pawns_poll
 from functions.keyboards import create_start_markup, create_stop_markup, create_unlogged_markup
@@ -134,6 +134,7 @@ def add_platform(message: Message, userdata: list) -> None:
             userdata.append(message.text.strip())
 
             poll = create_dragon_poll()
+            current_polls = ["start"]
             poll_id = bot.send_poll(message.from_user.id, poll["question"], options=poll["options"], \
                         is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"]).message_id
             
@@ -153,6 +154,9 @@ def add_poll_data(pollAnswer: PollAnswer) -> None:
         message (Message): Object, that contains information of received message
         userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
     """
+    if current_polls != "start":
+        return
+
     userdata.append(pollAnswer.option_ids)
     if len(userdata) == 8:
         add_fractions(userdata)
