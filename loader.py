@@ -24,6 +24,7 @@ CHATS = [int(main_chat)]
 
 last_message = dict()
 current_polls = ""
+userdata = dict()
 
 secret_word = os.environ.get("AUTH_WORD")
 engine = create_db_engine()
