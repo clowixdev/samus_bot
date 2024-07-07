@@ -13,6 +13,7 @@ This telegram bot will be used as notifier for clan members. Also, this bot can 
     8. register check when entering platform - DONE
     9. fix "unlogged_markup" for chats
     10. telegram api error about runtime fix
+    11. fix no @username users
 
 ## TODO:
     1. Add inline keyboards - DONE
@@ -24,7 +25,7 @@ This telegram bot will be used as notifier for clan members. Also, this bot can 
     7. Add group_chat keyboard (consist only fraction and everyone mentions) - DONE
     8. Add pawns mention (banshee, tesla, robot, panda) - DONE
     9. Add ability to edit profile - DONE
-    10. Add base commands for Admin-Panel
+    10. Add base commands for Dev-only (reboot, stats, adduser (straight to database))
     11. Add /bug command, that will ease bug-report process
     12. Add strategies for different modifiers
     13. Add some info about items, pawns and etc...
