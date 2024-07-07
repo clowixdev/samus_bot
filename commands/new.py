@@ -15,9 +15,11 @@ ALPHABET = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
 media_groups = dict()
 
 @bot.message_handler(content_types=["photo"])
-@chat_required
 @admin_required
 def gather_all_photos_in_media_group(message: Message) -> None:
+
+    if message.from_user.id != message.chat.id:
+        return
 
     media_group = message.media_group_id or message.message_id
 
