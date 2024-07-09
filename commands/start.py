@@ -6,7 +6,7 @@ from database.dbworker import get_user, add_user
 
 from loader import bot, engine, secret_word, current_polls, userdata
 
-from functions.funcs import stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll, create_pawns_poll
+from functions.funcs import stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll, create_pawns_poll, have_username
 from functions.keyboards import create_start_markup, create_stop_markup, create_unlogged_markup
 from functions.decorators import chat_required, spam_checker
 
@@ -40,6 +40,10 @@ def auth_member(message: Message) -> None:
     """
 
     if stop_talking(message):
+        return
+    
+    if not have_username(message):
+        bot.reply_to(message, REPLIES["add_username"], reply_markup=create_unlogged_markup())
         return
 
     if message.text == secret_word:
@@ -129,8 +133,7 @@ def add_platform(message: Message) -> None:
             userdata[message.from_user.id].append(message.text.strip())
 
             poll = create_dragon_poll()
-            global current_polls
-            current_polls = "start"
+            current_polls[message.from_user.id] = "start"
             poll_id = bot.send_poll(message.from_user.id, poll["question"], options=poll["options"], \
                         is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"]).message_id
             
@@ -152,14 +155,13 @@ def add_fractions(user_id: int) -> None:
     userdata[user_id].pop(0)
 
     poll = create_pawns_poll()
-    global current_polls
-    current_polls = "start"
+    current_polls[user_id] = "start"
     poll_id = bot.send_poll(userdata[user_id][0], poll["question"], options=poll["options"], \
                 is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"]).message_id
     
     userdata[user_id].insert(0, poll_id)
 
-@bot.poll_answer_handler(func=lambda _: current_polls == "start")
+@bot.poll_answer_handler(func=lambda pollAnswer: current_polls[pollAnswer.user.id] == "start")
 def add_poll_data(pollAnswer: PollAnswer) -> None:
     """Handler that will get all the answers and pass data to the next handler
 

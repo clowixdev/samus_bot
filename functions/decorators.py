@@ -117,3 +117,26 @@ def spam_checker(func: Callable) -> Any:
         last_message[args[0].from_user.id] = int(time())
         return func(*args, **kwargs)
     return wrapper
+
+
+def dev_required(func: Callable) -> Any:
+    """Function decorator that requires user to be a dev
+
+    Args:
+        func (Callable): decorated function
+
+    Returns:
+        Any: Result of decorated function call
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if not (args[0].from_user.id in DEVS):
+            print("{date} {username} with id {id} called dev function with no rights in {chat_id}".format(
+                date=datetime.now(), 
+                username=args[0].from_user.username, 
+                id=args[0].from_user.id, 
+                chat_id=args[0].chat.id
+            ))
+            return
+        return func(*args, **kwargs)
+    return wrapper

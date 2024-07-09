@@ -11,6 +11,19 @@ from functions.keyboards import create_start_markup, create_unlogged_markup
 
 from loader import bot, engine, ADMINS, DEVS
 
+def have_username(message: Message) -> bool:
+    """Function that will define whether user has username or no
+
+    Args:
+        message (Message): Object, that contains information of received message
+
+    Returns:
+        bool: True if user have username, False if user don't have username
+    """
+    if (message.from_user.username == None):
+        return False
+    return True
+
 def is_member(message: Message) -> bool:
     """Function will check if user that sending messages is a member of a clan
 

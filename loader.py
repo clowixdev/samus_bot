@@ -18,12 +18,8 @@ tofficer_id = os.environ.get("TOFFICER_ID")
 DEVS = [int(dev_id)]
 ADMINS = [int(leader_id), int(fhelper_id), int(fofficer_id), int(sofficer_id), int(tofficer_id)]
 
-main_chat = os.environ.get("MAIN_CHAT_ID")
-
-CHATS = [int(main_chat)]
-
 last_message = dict()
-current_polls = ""
+current_polls = dict()
 userdata = dict()
 
 secret_word = os.environ.get("AUTH_WORD")
