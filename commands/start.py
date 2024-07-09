@@ -6,7 +6,7 @@ from database.dbworker import get_user, add_user
 
 from loader import bot, engine, secret_word, current_polls, userdata
 
-from functions.funcs import stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll, create_pawns_poll
+from functions.funcs import stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll, create_pawns_poll, have_username
 from functions.keyboards import create_start_markup, create_stop_markup, create_unlogged_markup
 from functions.decorators import chat_required, spam_checker
 
@@ -40,6 +40,10 @@ def auth_member(message: Message) -> None:
     """
 
     if stop_talking(message):
+        return
+    
+    if not have_username(message):
+        bot.reply_to(message, REPLIES["add_username"], reply_markup=create_unlogged_markup())
         return
 
     if message.text == secret_word:
