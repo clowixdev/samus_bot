@@ -129,8 +129,7 @@ def add_platform(message: Message) -> None:
             userdata[message.from_user.id].append(message.text.strip())
 
             poll = create_dragon_poll()
-            global current_polls
-            current_polls = "start"
+            current_polls[message.from_user.id] = "start"
             poll_id = bot.send_poll(message.from_user.id, poll["question"], options=poll["options"], \
                         is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"]).message_id
             
@@ -152,14 +151,13 @@ def add_fractions(user_id: int) -> None:
     userdata[user_id].pop(0)
 
     poll = create_pawns_poll()
-    global current_polls
-    current_polls = "start"
+    current_polls[user_id] = "start"
     poll_id = bot.send_poll(userdata[user_id][0], poll["question"], options=poll["options"], \
                 is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"]).message_id
     
     userdata[user_id].insert(0, poll_id)
 
-@bot.poll_answer_handler(func=lambda _: current_polls == "start")
+@bot.poll_answer_handler(func=lambda pollAnswer: current_polls[pollAnswer.user.id] == "start")
 def add_poll_data(pollAnswer: PollAnswer) -> None:
     """Handler that will get all the answers and pass data to the next handler
 
