@@ -11,7 +11,6 @@ This telegram bot will be used as notifier for clan members. Also, this bot can 
     6. work with local ids when deleting and chosing templates - DONE
     7. Create a spam defend decorator - DONE
     8. register check when entering platform - DONE
-    9. fix "unlogged_markup" for chats
     10. telegram api error about runtime fix
     11. fix no @username users
 
