@@ -4,7 +4,7 @@ from datetime import datetime
 from database.dbworker import gen_users, delete_user
 
 from loader import bot, engine, main_chat_id
-from functions.decorators import chat_required, dev_required, spam_checker
+from functions.decorators import dev_required, spam_checker
 
 
 @bot.message_handler(commands=["clear"])
