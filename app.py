@@ -9,7 +9,7 @@ import commands
 if __name__ == "__main__":
     while True:
         try:
-            print(f"Bot script has been successfully enabled at {datetime.now()}")
+            print(f"START: {datetime.now()} Bot script has been successfully enabled")
             bot.polling(non_stop=True, interval=0)
         except apihelper.ApiTelegramException as tele_e:
             print("EXCEPTION:", datetime.now(), tele_e)
