@@ -4,3 +4,4 @@ __pycache__/
 # Files
 database/database.db
 *.jpg
+*.bat
