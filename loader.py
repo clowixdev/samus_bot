@@ -14,11 +14,15 @@ fhelper_id = os.environ.get("FHELPER_ID")
 fofficer_id = os.environ.get("FOFFICER_ID")
 sofficer_id = os.environ.get("SOFFICER_ID")
 tofficer_id = os.environ.get("TOFFICER_ID")
-frofficer_id = os.environ.get("FOFFICER_ID")
+frofficer_id = os.environ.get("FROFFICER_ID")
 main_chat_id = os.environ.get("MAIN_CHAT_ID")
 
 DEVS = [int(dev_id)]
-ADMINS = [int(leader_id), int(fhelper_id), int(fofficer_id), int(sofficer_id), int(tofficer_id), int(frofficer_id)]
+ADMINS = [
+    int(leader_id), int(fhelper_id), 
+    int(fofficer_id), int(sofficer_id), 
+    int(tofficer_id), int(frofficer_id)
+    ]
 
 last_message = dict()
 current_polls = dict()
