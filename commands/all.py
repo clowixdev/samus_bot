@@ -83,11 +83,12 @@ def send_without_storing(message: Message) -> None:
 
     if stop_talking(message):
         return
-
+    
+    message_text = message.text or message.caption
+    
     for user in gen_users(engine):
         if user.id == message.from_user.id:
             continue
         else:
-            message_text = message.text or message.caption
             bot.send_message(user.id, message_text)
     bot.send_message(message.from_user.id, REPLIES["msg_sent"], reply_markup=create_start_markup(message.from_user.id))

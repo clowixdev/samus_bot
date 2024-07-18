@@ -40,6 +40,24 @@ def is_member(message: Message) -> bool:
     return False
 
 
+def get_number(str: str) -> str:
+    """Function that will separate number from other text
+
+    Args:
+        str (str): incoming message
+
+    Returns:
+        str: cleared message
+    """
+    cleared_str = ""
+
+    for char in str:
+        if char in '1234567890':
+            cleared_str += char
+
+    return cleared_str
+
+
 def get_template(message: Message, recall_function: object) -> Template:
     """Function that handles all the errors while getting an template
 
@@ -52,10 +70,8 @@ def get_template(message: Message, recall_function: object) -> Template:
     """
 
     try:
-        if len(message.text) == 1:
-            template_id = int(message.text)
-        else:
-            template_id = int(message.text[-3])
+        message_text = get_number(message.text)
+        template_id = int(message_text)
     except ValueError as e:
         bot.reply_to(message, REPLIES["invalid_key"])
         recall_function(message)
