@@ -3,7 +3,7 @@ from datetime import datetime
 
 from database.dbworker import gen_users, delete_user
 
-from loader import bot, engine, main_chat_id
+from loader import bot, engine, main_chat_id, ADMINS, DEVS
 from functions.decorators import dev_required, spam_checker
 
 
@@ -41,7 +41,13 @@ def stats_command(message: Message)-> None:
 
     all_users = gen_users(engine)
     for id, user in enumerate(all_users, 1):
-        print(f"DEV: {id}) @{user.username} - {user.rr_name} - {user.crit_dmg}%")
+        msg = f"DEV: {id}) @{user.username} - {user.rr_name} - {user.crit_dmg}%"
+        if user.id in ADMINS:
+            msg += "- ADMIN"
+        if user.id in DEVS:
+            msg += "- DEV"
+        
+        print(msg)
 
     print(f"DEV: total {len(all_users)} users registered and {bot.get_chat_member_count(main_chat_id)} total")
 
