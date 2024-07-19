@@ -42,7 +42,7 @@ def stats_command(message: Message)-> None:
     all_users = gen_users(engine)
     for id, user in enumerate(all_users, 1):
         msg = f"DEV: {id}) @{user.username} - {user.rr_name} - {user.crit_dmg}%"
-        msg += " " * (80 - len(msg))
+        msg += " " * (60 - len(msg))
         if user.id in ADMINS:
             msg += " - ADMIN"
         if user.id in DEVS:
