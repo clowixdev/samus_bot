@@ -69,7 +69,7 @@ def create_all_markup(templates_amt: int) -> ReplyKeyboardMarkup:
     all_markup = ReplyKeyboardMarkup(resize_keyboard=True)
 
     for button in range(templates_amt):
-        markup_button = KeyboardButton(f"Шаблон номер {button+1} 💾")
+        markup_button = KeyboardButton(f"{button+1} 💾")
         all_markup.add(markup_button)
 
     instant_send_button = KeyboardButton("Отправить без сохранения 📋")
@@ -92,7 +92,7 @@ def create_view_markup(templates_amt: int) -> ReplyKeyboardMarkup:
     view_markup = ReplyKeyboardMarkup(resize_keyboard=True)
 
     for button in range(templates_amt):
-        markup_button = KeyboardButton(f"Шаблон номер {button+1} 💾")
+        markup_button = KeyboardButton(f"{button+1} 💾")
         view_markup.add(markup_button)
 
     stop_button = KeyboardButton("Стоп ❌")
@@ -114,7 +114,7 @@ def create_del_markup(templates_amt: int) -> ReplyKeyboardMarkup:
     del_markup = ReplyKeyboardMarkup(resize_keyboard=True)
 
     for button in range(templates_amt):
-        markup_button = KeyboardButton(f"Шаблон номер {button+1} 💾")
+        markup_button = KeyboardButton(f"{button+1} 💾")
         del_markup.add(markup_button)
 
     stop_button = KeyboardButton("Стоп ❌")
