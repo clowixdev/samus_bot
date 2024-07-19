@@ -111,7 +111,7 @@ def gen_templates() -> Tuple[str, int]:
                 formatted_template += word
             formatted_template += " "
         formatted_template = str.rstrip(formatted_template)
-        message += f"{keys+1}) {formatted_template}\n\n"
+        message += f"{keys+1}) {formatted_template}\n"
 
     return (message, keys+1)
 
