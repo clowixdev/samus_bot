@@ -42,14 +42,15 @@ def stats_command(message: Message)-> None:
     all_users = gen_users(engine)
     for id, user in enumerate(all_users, 1):
         msg = f"DEV: {id}) @{user.username} - {user.rr_name} - {user.crit_dmg}%"
+        msg += " " * (80 - len(msg))
         if user.id in ADMINS:
-            msg += "- ADMIN"
+            msg += " - ADMIN"
         if user.id in DEVS:
-            msg += "- DEV"
+            msg += " - DEV"
         
         print(msg)
 
-    print(f"DEV: total {len(all_users)} users registered and {bot.get_chat_member_count(main_chat_id)} total")
+    print(f"DEV: total {len(all_users)} users registered and {bot.get_chat_member_count(main_chat_id) - 2} total")
 
     bot.reply_to(message, f"Printed all the stats, check the console")
     print("{date} DEV: {username} with id {id} called \"/stats\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
