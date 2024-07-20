@@ -78,7 +78,13 @@ def get_template(message: Message, recall_function: Callable) -> Template:
         return
     
     templates = get_templates(engine)
-    template = templates[template_id - 1]
+    try:
+        template = templates[template_id - 1]
+    except IndexError as e:
+        bot.reply_to(message, REPLIES["invalid_key"])
+        recall_function(message)
+        return
+    
     if template is None:
         bot.reply_to(message, REPLIES["invalid_key"])
         recall_function(message)
