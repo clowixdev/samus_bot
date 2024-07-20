@@ -46,11 +46,12 @@ def view_template(message: Message) -> None:
     if stop_talking(message):
         return
     
+    user = get_user(message.from_user.id, None, engine)
     template = get_template(message, view_command)
     
     if template is not None:
         if (template.photo1 is None):
-            bot.send_message(message.from_user.id, (template.template).format(rr_name="имя_соклановца"))
+            bot.send_message(message.from_user.id, (template.template).format(rr_name=user.rr_name))
         else:
             media_group = [InputMediaPhoto(template.photo1, caption=template.template)]
             if template.photo2 is not None:
