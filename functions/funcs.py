@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Callable
 from types import NoneType
 
 from telebot.types import Message
@@ -58,12 +58,12 @@ def get_number(str: str) -> str:
     return cleared_str
 
 
-def get_template(message: Message, recall_function: object) -> Template:
+def get_template(message: Message, recall_function: Callable) -> Template:
     """Function that handles all the errors while getting an template
 
     Args:
         message (Message): Object, that contains information of received message
-        recall_function (object): function that will be called, if error is detected
+        recall_function (Callable): function that will be called, if error is detected
 
     Returns:
         Template: model of a template
@@ -78,7 +78,13 @@ def get_template(message: Message, recall_function: object) -> Template:
         return
     
     templates = get_templates(engine)
-    template = templates[template_id - 1]
+    try:
+        template = templates[template_id - 1]
+    except IndexError as e:
+        bot.reply_to(message, REPLIES["invalid_key"])
+        recall_function(message)
+        return
+    
     if template is None:
         bot.reply_to(message, REPLIES["invalid_key"])
         recall_function(message)
@@ -87,8 +93,11 @@ def get_template(message: Message, recall_function: object) -> Template:
     return template
 
 
-def gen_templates() -> Tuple[str, int]:
-    """Function that generates one entire message with templates
+def gen_templates(rr_name: str) -> Tuple[str, int]:
+    """Function that generates one entire message with template's descriptions
+
+    Args:
+        rr_name (str): in-game name of admin
 
     Returns:
         str: Generated message
@@ -104,9 +113,9 @@ def gen_templates() -> Tuple[str, int]:
         formatted_template = ""
         for word in str.split(current_templates[keys]):
             if word == "{rr_name}":
-                formatted_template += "имя_соклановца"
+                formatted_template += rr_name
             elif word[:-1] == "{rr_name}":
-                formatted_template += "имя_соклановца" + word[-1]
+                formatted_template += rr_name + word[-1]
             else:
                 formatted_template += word
             formatted_template += " "

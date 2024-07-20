@@ -2,7 +2,7 @@ from telebot.types import Message, InputMediaPhoto
 from datetime import datetime
 
 from database.msg_templates import REPLIES
-from database.dbworker import gen_users
+from database.dbworker import gen_users, get_user
 
 from loader import bot, engine
 
@@ -25,7 +25,8 @@ def all_command(message: Message) -> None:
     """
 
     try:
-        templates, templates_amt = gen_templates()
+        user = get_user(message.from_user.id, None, engine)
+        templates, templates_amt = gen_templates(user.rr_name)
         bot.reply_to(message, REPLIES["choose_template"])
         bot.reply_to(message, templates, reply_markup=create_all_markup(templates_amt))
         bot.register_next_step_handler(message, choose_template)
@@ -54,23 +55,20 @@ def choose_template(message: Message) -> None:
     template = get_template(message, all_command)
 
     for user in gen_users(engine):
-        if user.id == message.from_user.id:
-            continue
+        if (template.photo1 is None):
+            bot.send_message(user.id, (template.template).format(rr_name=user.rr_name))
         else:
-            if (template.photo1 is None):
-                bot.send_message(user.id, (template.template).format(rr_name=user.rr_name))
-            else:
-                media_group = [InputMediaPhoto(template.photo1, caption=template.template)]
-                if template.photo2 is not None:
-                    media_group += [InputMediaPhoto(template.photo2)]
-                if template.photo3 is not None:
-                    media_group += [InputMediaPhoto(template.photo3)]
-                if template.photo4 is not None:
-                    media_group += [InputMediaPhoto(template.photo4)]
-                if template.photo5 is not None:
-                    media_group += [InputMediaPhoto(template.photo5)]
+            media_group = [InputMediaPhoto(template.photo1, caption=template.template)]
+            if template.photo2 is not None:
+                media_group += [InputMediaPhoto(template.photo2)]
+            if template.photo3 is not None:
+                media_group += [InputMediaPhoto(template.photo3)]
+            if template.photo4 is not None:
+                media_group += [InputMediaPhoto(template.photo4)]
+            if template.photo5 is not None:
+                media_group += [InputMediaPhoto(template.photo5)]
 
-                bot.send_media_group(user.id, media_group)
+            bot.send_media_group(user.id, media_group)
     bot.send_message(message.from_user.id, REPLIES["msg_sent"], reply_markup=create_start_markup(message.from_user.id))
 
 
@@ -87,8 +85,6 @@ def send_without_storing(message: Message) -> None:
     message_text = message.text or message.caption
     
     for user in gen_users(engine):
-        if user.id == message.from_user.id:
-            continue
-        else:
-            bot.send_message(user.id, message_text)
+        bot.send_message(user.id, message_text)
+
     bot.send_message(message.from_user.id, REPLIES["msg_sent"], reply_markup=create_start_markup(message.from_user.id))
