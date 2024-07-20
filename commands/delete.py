@@ -2,7 +2,7 @@ from telebot.types import Message
 from datetime import datetime
 
 from database.msg_templates import REPLIES
-from database.dbworker import delete_template
+from database.dbworker import delete_template, get_user
 
 from loader import bot, engine
 
@@ -25,7 +25,8 @@ def delete_command(message: Message) -> None:
     """
 
     try:
-        templates, templates_amt = gen_templates()
+        user = get_user(message.from_user.id, None, engine)
+        templates, templates_amt = gen_templates(user.rr_name)
         bot.reply_to(message, templates)
         bot.reply_to(message, REPLIES["del_template"], reply_markup=create_del_markup(templates_amt))
         bot.register_next_step_handler(message, del_template)
