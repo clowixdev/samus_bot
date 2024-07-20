@@ -2,7 +2,7 @@ from telebot.types import Message, InputMediaPhoto
 from datetime import datetime
 
 from database.msg_templates import REPLIES
-from database.dbworker import gen_users
+from database.dbworker import gen_users, get_user
 
 from loader import bot, engine
 
@@ -25,7 +25,8 @@ def all_command(message: Message) -> None:
     """
 
     try:
-        templates, templates_amt = gen_templates()
+        user = get_user(message.from_user.id, None, engine)
+        templates, templates_amt = gen_templates(user.rr_name)
         bot.reply_to(message, REPLIES["choose_template"])
         bot.reply_to(message, templates, reply_markup=create_all_markup(templates_amt))
         bot.register_next_step_handler(message, choose_template)
@@ -87,8 +88,5 @@ def send_without_storing(message: Message) -> None:
     message_text = message.text or message.caption
     
     for user in gen_users(engine):
-        if user.id == message.from_user.id:
-            continue
-        else:
-            bot.send_message(user.id, message_text)
+        bot.send_message(user.id, message_text)
     bot.send_message(message.from_user.id, REPLIES["msg_sent"], reply_markup=create_start_markup(message.from_user.id))

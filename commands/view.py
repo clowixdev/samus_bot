@@ -2,8 +2,9 @@ from telebot.types import Message, InputMediaPhoto
 from datetime import datetime
 
 from database.msg_templates import REPLIES
+from database.dbworker import get_user
 
-from loader import bot
+from loader import bot, engine
 
 from functions.funcs import gen_templates, stop_talking, get_template
 from functions.keyboards import create_start_markup, create_view_markup
@@ -24,7 +25,8 @@ def view_command(message: Message) -> None:
     """
 
     try:
-        templates, templates_amt = gen_templates()
+        user = get_user(message.from_user.id, None, engine)
+        templates, templates_amt = gen_templates(user.rr_name)
         bot.reply_to(message, REPLIES["show_templates"])
         bot.reply_to(message, templates, reply_markup=create_view_markup(templates_amt))
         bot.register_next_step_handler(message, view_template)
