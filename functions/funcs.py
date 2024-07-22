@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Callable
 from types import NoneType
 
 from telebot.types import Message
@@ -10,6 +10,19 @@ from database.models import User, Template
 from functions.keyboards import create_start_markup, create_unlogged_markup
 
 from loader import bot, engine, ADMINS, DEVS
+
+def have_username(message: Message) -> bool:
+    """Function that will define whether user has username or no
+
+    Args:
+        message (Message): Object, that contains information of received message
+
+    Returns:
+        bool: True if user have username, False if user don't have username
+    """
+    if (message.from_user.username == None):
+        return False
+    return True
 
 def is_member(message: Message) -> bool:
     """Function will check if user that sending messages is a member of a clan
@@ -27,29 +40,51 @@ def is_member(message: Message) -> bool:
     return False
 
 
-def get_template(message: Message, recall_function: object) -> Template:
+def get_number(str: str) -> str:
+    """Function that will separate number from other text
+
+    Args:
+        str (str): incoming message
+
+    Returns:
+        str: cleared message
+    """
+    cleared_str = ""
+
+    for char in str:
+        if char in '1234567890':
+            cleared_str += char
+
+    return cleared_str
+
+
+def get_template(message: Message, recall_function: Callable) -> Template:
     """Function that handles all the errors while getting an template
 
     Args:
         message (Message): Object, that contains information of received message
-        recall_function (object): function that will be called, if error is detected
+        recall_function (Callable): function that will be called, if error is detected
 
     Returns:
         Template: model of a template
     """
 
     try:
-        if len(message.text) == 1:
-            template_id = int(message.text)
-        else:
-            template_id = int(message.text[-3])
+        message_text = get_number(message.text)
+        template_id = int(message_text)
     except ValueError as e:
         bot.reply_to(message, REPLIES["invalid_key"])
         recall_function(message)
         return
     
     templates = get_templates(engine)
-    template = templates[template_id - 1]
+    try:
+        template = templates[template_id - 1]
+    except IndexError as e:
+        bot.reply_to(message, REPLIES["invalid_key"])
+        recall_function(message)
+        return
+    
     if template is None:
         bot.reply_to(message, REPLIES["invalid_key"])
         recall_function(message)
@@ -58,8 +93,11 @@ def get_template(message: Message, recall_function: object) -> Template:
     return template
 
 
-def gen_templates() -> Tuple[str, int]:
-    """Function that generates one entire message with templates
+def gen_templates(rr_name: str) -> Tuple[str, int]:
+    """Function that generates one entire message with template's descriptions
+
+    Args:
+        rr_name (str): in-game name of admin
 
     Returns:
         str: Generated message
@@ -75,14 +113,14 @@ def gen_templates() -> Tuple[str, int]:
         formatted_template = ""
         for word in str.split(current_templates[keys]):
             if word == "{rr_name}":
-                formatted_template += "имя_соклановца"
+                formatted_template += rr_name
             elif word[:-1] == "{rr_name}":
-                formatted_template += "имя_соклановца" + word[-1]
+                formatted_template += rr_name + word[-1]
             else:
                 formatted_template += word
             formatted_template += " "
         formatted_template = str.rstrip(formatted_template)
-        message += f"{keys+1}) {formatted_template}\n\n"
+        message += f"{keys+1}) {formatted_template}\n"
 
     return (message, keys+1)
 

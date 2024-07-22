@@ -33,10 +33,10 @@ def create_session(engine: Engine) -> Session:
 
 
 def get_user(user_id: int, username:str, engine: Engine) -> User:
-    """Function that return a user if he exists in the database; otherwise, it creates it.
+    """Function that return a user if he exists in the database
 
     Args:
-        user_id (int): ID of user thah defined by Telegram
+        user_id (int): ID of user that defined by Telegram
         username (str): username of user that is defined by user and could be changed
         engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
 
@@ -478,6 +478,30 @@ def edit_user_pawns(new_pawns: list, user_id: int, engine: Engine) -> None:
         user.tesla_pawn = 1 in new_pawns
         user.robot_pawn = 2 in new_pawns
         user.panda_pawn = 3 in new_pawns
+        
+        session.add(user)
+        session.commit()
+    except BaseException as e:
+        print(e)
+        session.rollback()
+    finally:
+        session.close()
+
+
+def update_username(user_id: int, new_username: str, engine: Engine) -> None:
+    """Function, that will compare update user's username
+
+    Args:
+        user_id (int): User ID that is defined by Telegram
+        new_username (str): New username in telegram
+        engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
+    """
+    session = create_session(engine)
+    try:
+        user = session.query(User).filter_by(id=user_id).first()
+        if not user:
+            return 
+        user.username = new_username
         
         session.add(user)
         session.commit()

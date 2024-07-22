@@ -4,13 +4,12 @@ from datetime import datetime
 from database.msg_templates import REPLIES
 from database.dbworker import get_user, add_user
 
-from loader import bot, engine, secret_word, current_polls
+from loader import bot, engine, secret_word, current_polls, userdata
 
-from functions.funcs import stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll, create_pawns_poll
+from functions.funcs import stop_talking, check_platform, check_critdmg, check_uid, create_dragon_poll, create_pawns_poll, have_username
 from functions.keyboards import create_start_markup, create_stop_markup, create_unlogged_markup
 from functions.decorators import chat_required, spam_checker
 
-userdata = []
 
 @bot.message_handler(commands=["start"])
 @bot.message_handler(func=lambda message: message.text == "Начать ⭐")
@@ -22,7 +21,6 @@ def start_command(message: Message)-> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-    
     bot.reply_to(message, REPLIES["start"])
     curr_user = get_user(message.from_user.id, message.from_user.username, engine)
     if curr_user == None:
@@ -43,8 +41,13 @@ def auth_member(message: Message) -> None:
 
     if stop_talking(message):
         return
+    
+    if not have_username(message):
+        bot.reply_to(message, REPLIES["add_username"], reply_markup=create_unlogged_markup())
+        return
 
     if message.text == secret_word:
+        userdata[message.from_user.id] = []
         bot.reply_to(message, REPLIES["add_nickname"], reply_markup=create_stop_markup())
         bot.register_next_step_handler(message, add_nickname)
     else:
@@ -63,109 +66,102 @@ def add_nickname(message: Message) -> None:
     if stop_talking(message):
         return
     
-    global userdata
-    if len(userdata) == 0:
-        userdata.append(message.text)
-        userdata.append(message.from_user.username)
+    if len(userdata[message.from_user.id]) == 0:
+        userdata[message.from_user.id].append(message.text)
+        userdata[message.from_user.id].append(message.from_user.username)
     bot.reply_to(message, REPLIES["add_critdmg"], reply_markup=create_stop_markup())
-    bot.register_next_step_handler(message, add_critdmg, userdata)
+    bot.register_next_step_handler(message, add_critdmg)
 
 
-def add_critdmg(message: Message, userdata: list) -> None:
+def add_critdmg(message: Message) -> None:
     """Handler that will collect data about crit DMG
 
     Args:
         message (Message): Object, that contains information of received message
-        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
     """
 
     if stop_talking(message):
         return
     
     try:
-        if len(userdata) == 2:
+        if len(userdata[message.from_user.id]) == 2:
             check_critdmg(int(message.text))
-            userdata.append(int(message.text))
+            userdata[message.from_user.id].append(int(message.text))
         bot.reply_to(message, REPLIES["add_uid"], reply_markup=create_stop_markup())
-        bot.register_next_step_handler(message, add_uid, userdata)
+        bot.register_next_step_handler(message, add_uid)
     except ValueError as e:
         bot.reply_to(message, REPLIES["invalid_critdmg"], reply_markup=create_stop_markup())
         add_nickname(message)
         return
 
 
-def add_uid(message: Message, userdata: list) -> None:
+def add_uid(message: Message) -> None:
     """Handler that will collect data about uid
 
     Args:
         message (Message): Object, that contains information of received message
-        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
     """
 
     if stop_talking(message):
         return
     
     try:
-        if len(userdata) == 3:
+        if len(userdata[message.from_user.id]) == 3:
             check_uid(int(message.text))
-            userdata.append(int(message.text))
+            userdata[message.from_user.id].append(int(message.text))
         bot.reply_to(message, REPLIES["add_platform"], reply_markup=create_stop_markup())
-        bot.register_next_step_handler(message, add_platform, userdata)
+        bot.register_next_step_handler(message, add_platform)
     except ValueError as e:
         bot.reply_to(message, REPLIES["invalid_uid"], reply_markup=create_stop_markup())
-        add_critdmg(message, userdata)
+        add_critdmg(message)
         return
 
 
-def add_platform(message: Message, userdata: list) -> None:
+def add_platform(message: Message) -> None:
     """Handler that will collect data about users platform
 
     Args:
         message (Message): Object, that contains information of received message
-        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
     """
 
     if stop_talking(message):
         return
 
     try:
-        if len(userdata) == 4:
+        if len(userdata[message.from_user.id]) == 4:
             check_platform(message.text.strip())
-            userdata.append(message.text.strip())
+            userdata[message.from_user.id].append(message.text.strip())
 
             poll = create_dragon_poll()
-            global current_polls
-            current_polls = "start"
+            current_polls[message.from_user.id] = "start"
             poll_id = bot.send_poll(message.from_user.id, poll["question"], options=poll["options"], \
                         is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"]).message_id
             
-            userdata.insert(0, poll_id)
-            userdata.insert(1, message.from_user.id)
+            userdata[message.from_user.id].insert(0, poll_id)
+            userdata[message.from_user.id].insert(1, message.from_user.id)
     except ValueError as e:
         bot.reply_to(message, REPLIES["invalid_platform"], reply_markup=create_stop_markup())
-        add_uid(message, userdata)
+        add_uid(message)
         return
 
 
-def add_fractions(userdata: list) -> None:
+def add_fractions(user_id: int) -> None:
     """Handler that will create a poll and determine players fractions, then add all stored data to database
 
     Args:
-        message (Message): Object, that contains information of received message
-        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
+        user_id (int): user id that is defined by Telegram
     """
-    bot.delete_message(userdata[1], userdata[0])
-    userdata.pop(0)
+    bot.delete_message(userdata[user_id][1], userdata[user_id][0])
+    userdata[user_id].pop(0)
 
     poll = create_pawns_poll()
-    global current_polls
-    current_polls = "start"
-    poll_id = bot.send_poll(userdata[0], poll["question"], options=poll["options"], \
+    current_polls[user_id] = "start"
+    poll_id = bot.send_poll(userdata[user_id][0], poll["question"], options=poll["options"], \
                 is_anonymous=poll["is_anonymous"], allows_multiple_answers=poll["allow_multiple"]).message_id
     
-    userdata.insert(0, poll_id)
+    userdata[user_id].insert(0, poll_id)
 
-@bot.poll_answer_handler(func=lambda _: current_polls == "start")
+@bot.poll_answer_handler(func=lambda pollAnswer: current_polls[pollAnswer.user.id] == "start")
 def add_poll_data(pollAnswer: PollAnswer) -> None:
     """Handler that will get all the answers and pass data to the next handler
 
@@ -174,24 +170,24 @@ def add_poll_data(pollAnswer: PollAnswer) -> None:
         userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
     """
 
-    userdata.append(pollAnswer.option_ids)
-    if len(userdata) == 8:
-        add_fractions(userdata)
+    userdata[pollAnswer.user.id].append(pollAnswer.option_ids)
+    if len(userdata[pollAnswer.user.id]) == 8:
+        add_fractions(pollAnswer.user.id)
     else:
-        add_event_pawns(userdata)
+        add_event_pawns(pollAnswer.user.id)
 
-def add_event_pawns(userdata: list) -> None:
+def add_event_pawns(user_id: int) -> None:
     """Handler that will create a poll and determine players event pawns, then add all stored data to database
 
     Args:
-        message (Message): Object, that contains information of received message
-        userdata (list): Stored data about player (format: [player_id, playername, username, critdmg, uid, platform, [fractions]])
+        user_id (int): user id that is defined by Telegram
     """
-    bot.delete_message(userdata[1], userdata[0])
-    userdata.pop(0)
+    bot.delete_message(userdata[user_id][1], userdata[user_id][0])
+    userdata[user_id].pop(0)
 
-    bot.send_message(userdata[0], REPLIES["registration_passed"], reply_markup=create_start_markup(userdata[0]))
-    bot.send_message(userdata[0], REPLIES["logged"].format(rr_name=userdata[1]), reply_markup=create_start_markup(userdata[0]))
+    bot.send_message(userdata[user_id][0], REPLIES["registration_passed"], reply_markup=create_start_markup(userdata[user_id][0]))
+    bot.send_message(userdata[user_id][0], REPLIES["logged"].format(rr_name=userdata[user_id][1]), reply_markup=create_start_markup(userdata[user_id][0]))
 
-    add_user(userdata, engine)
+    add_user(userdata[user_id], engine)
+    del(userdata[user_id])
 

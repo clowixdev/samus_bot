@@ -1,0 +1,56 @@
+from telebot.types import Message
+from datetime import datetime
+
+from database.dbworker import gen_users, delete_user
+
+from loader import bot, engine, main_chat_id, ADMINS, DEVS
+from functions.decorators import dev_required, spam_checker
+
+
+@bot.message_handler(commands=["clear"])
+@spam_checker
+@dev_required
+def clear_command(message: Message)-> None:
+    """Handler that provides work for "clear" function that will clear database from None username profiles
+
+    Args:
+        message (Message): Object, that contains information of received message
+    """
+    all_users = gen_users(engine)
+    deleted_users = 0
+    for user in all_users:
+        if user.username == None:
+            deleted_users += 1
+            print(f"DEV: deleted user {user.rr_name} - {user.crit_dmg}%")
+            delete_user(user.id, engine)
+
+    bot.reply_to(message, f"Deleted {deleted_users} users, check the console")
+
+    print("{date} DEV: {username} with id {id} called \"/clear\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
+
+
+@bot.message_handler(commands=["stats"])
+@spam_checker
+@dev_required
+def stats_command(message: Message)-> None:
+    """Handler that will provide work for stats command that will give me brief info about clan
+
+    Args:
+        message (Message): Object, that contains information of received message
+    """
+
+    all_users = gen_users(engine)
+    for id, user in enumerate(all_users, 1):
+        msg = f"DEV: {id}) @{user.username} - {user.rr_name} - {user.crit_dmg}%"
+        msg += " " * (60 - len(msg))
+        if user.id in ADMINS:
+            msg += " - ADMIN"
+        if user.id in DEVS:
+            msg += " - DEV"
+        
+        print(msg)
+
+    print(f"DEV: total {len(all_users)} users registered and {bot.get_chat_member_count(main_chat_id) - 2} total")
+
+    bot.reply_to(message, f"Printed all the stats, check the console")
+    print("{date} DEV: {username} with id {id} called \"/stats\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))

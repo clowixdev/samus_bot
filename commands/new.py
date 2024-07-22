@@ -4,7 +4,7 @@ from datetime import datetime
 from database.msg_templates import REPLIES
 from database.dbworker import add_templates
 
-from loader import bot, engine
+from loader import bot, engine, ADMINS, DEVS
 
 from functions.funcs import stop_talking
 from functions.keyboards import create_start_markup, create_stop_markup
@@ -15,9 +15,13 @@ ALPHABET = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
 media_groups = dict()
 
 @bot.message_handler(content_types=["photo"])
-@chat_required
-@admin_required
 def gather_all_photos_in_media_group(message: Message) -> None:
+
+    if message.from_user.id != message.chat.id:
+        return
+
+    if message.from_user.id not in ADMINS or message.from_user.id not in DEVS:
+        return
 
     media_group = message.media_group_id or message.message_id
 
@@ -57,6 +61,8 @@ def add_template(message: Message) -> None:
 
     if stop_talking(message):
         return
+
+    media_group = None
 
     if message.photo is not None:
         photo_info = bot.get_file(message.photo[-1].file_id)

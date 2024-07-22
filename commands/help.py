@@ -10,7 +10,7 @@ from functions.keyboards import create_start_markup, create_group_markup
 from functions.decorators import member_required, spam_checker
 
 
-@bot.message_handler(commands=["help"])
+@bot.message_handler(commands=["helps"])
 @bot.message_handler(func=lambda message: message.text == "Помощь 📃")
 @spam_checker
 @member_required
