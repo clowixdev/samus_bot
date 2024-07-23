@@ -272,7 +272,9 @@ def create_accept_markup(user_id: int) -> InlineKeyboardMarkup:
 
     accept_button = InlineKeyboardButton("Принять ✅", callback_data=("a"+str(user_id)))
     deny_button = InlineKeyboardButton("Отклонить ❌", callback_data=("d"+str(user_id)))
+    academy_button = InlineKeyboardButton("В академку 🎲", callback_data=("p"+str(user_id)))
 
     accept_markup.add(accept_button, deny_button)
+    accept_markup.add(academy_button)
 
     return accept_markup
