@@ -111,11 +111,11 @@ def spam_checker(func: Callable) -> Any:
     @wraps(func)
     def wrapper(*args, **kwargs):
         if args[0].from_user.id not in last_message:
-            last_message[args[0].from_user.id] = 0
-        if int(time()) - last_message[args[0].from_user.id] < 0.6:
+            last_message[args[0].from_user.id] = float(0)
+        if (float(time()) - float(last_message[args[0].from_user.id])) < 0.3:
             return
 
-        last_message[args[0].from_user.id] = int(time())
+        last_message[args[0].from_user.id] = float(time())
         return func(*args, **kwargs)
     return wrapper
 
