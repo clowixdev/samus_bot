@@ -1,4 +1,4 @@
-from telebot.types import ReplyKeyboardMarkup, KeyboardButton
+from telebot.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
 from loader import DEVS, ADMINS
 
 def create_start_markup(user_id: int) -> ReplyKeyboardMarkup:
@@ -188,6 +188,61 @@ def create_group_markup() -> ReplyKeyboardMarkup:
 
     return group_markup
 
+
+def create_welcome_markup() -> ReplyKeyboardMarkup:
+    """Function that creates welcome markup and return it
+
+    Returns:
+        ReplyKeyboardMarkup: markup to apply for a clan or to register
+    """
+    welcome_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+
+    reg_button = KeyboardButton("Уже участник 🔍")
+    apply_button = KeyboardButton("Подать заявку 📨")
+    stop_button = KeyboardButton("Стоп ❌")
+
+    welcome_markup.add(reg_button, apply_button)
+    welcome_markup.add(stop_button)
+
+    return welcome_markup
+
+
+def create_requirements_markup() -> ReplyKeyboardMarkup:
+    """Function that creates requirements markup and return it
+
+    Returns:
+        ReplyKeyboardMarkup: markup to accept or to deny requirements
+    """
+    requirements_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+
+    accept_button = KeyboardButton("Согласен ✅")
+    deny_button = KeyboardButton("Не согласен ❌")
+    stop_button = KeyboardButton("Стоп ❌")
+
+    requirements_markup.add(accept_button, deny_button)
+    requirements_markup.add(stop_button)
+
+    return requirements_markup
+
+
+def create_check_markup() -> ReplyKeyboardMarkup:
+    """Function that creates appliance markup and return it
+
+    Returns:
+        ReplyKeyboardMarkup: markup to accept or to deny correctness of appliance
+    """
+    check_markup = ReplyKeyboardMarkup(resize_keyboard=True)
+
+    accept_button = KeyboardButton("Верно ✅")
+    deny_button = KeyboardButton("Не верно ❌")
+    stop_button = KeyboardButton("Стоп ❌")
+
+    check_markup.add(accept_button, deny_button)
+    check_markup.add(stop_button)
+
+    return check_markup
+
+
 def create_unlogged_markup() -> ReplyKeyboardMarkup:
     """Fucntion that will create ReplyKeyboard for unlogged user and return it
 
@@ -199,3 +254,22 @@ def create_unlogged_markup() -> ReplyKeyboardMarkup:
     unlogged_markup.add(start_button)
 
     return unlogged_markup
+
+
+def create_accept_markup(user_id: int) -> InlineKeyboardMarkup:
+    """Function that creates inline keyboard for admins to accept or deny an appliance
+
+    Args:
+        user_id (int): user's id that is defined by Telegram
+
+    Returns:
+        InlineKeyboardMarkup: created inline markup for admins
+    """
+    accept_markup = InlineKeyboardMarkup()
+
+    accept_button = InlineKeyboardButton("Принять ✅", callback_data=("a"+str(user_id)))
+    deny_button = InlineKeyboardButton("Отклонить ❌", callback_data=("d"+str(user_id)))
+
+    accept_markup.add(accept_button, deny_button)
+
+    return accept_markup

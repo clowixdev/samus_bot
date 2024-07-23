@@ -16,7 +16,10 @@ sofficer_id = os.environ.get("SOFFICER_ID")
 tofficer_id = os.environ.get("TOFFICER_ID")
 frofficer_id = os.environ.get("FROFFICER_ID")
 sxofficer_id = os.environ.get("SXOFFICER_ID")
+
 main_chat_id = os.environ.get("MAIN_CHAT_ID")
+admins_chat_id = os.environ.get("ADMINS_CHAT_ID")
+general_chat_link = os.environ.get("MAIN_CHAT_LINK")
 
 DEVS = [int(dev_id)]
 ADMINS = [
@@ -29,6 +32,8 @@ ADMINS = [
 last_message = dict()
 current_polls = dict()
 userdata = dict()
+appliances = dict()
+media_groups = dict()
 
 secret_word = os.environ.get("AUTH_WORD")
 engine = create_db_engine()

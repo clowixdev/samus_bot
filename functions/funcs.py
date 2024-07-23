@@ -9,7 +9,7 @@ from database.models import User, Template
 
 from functions.keyboards import create_start_markup, create_unlogged_markup
 
-from loader import bot, engine, ADMINS, DEVS
+from loader import bot, engine, ADMINS, DEVS, media_groups, appliances
 
 def have_username(message: Message) -> bool:
     """Function that will define whether user has username or no
@@ -137,6 +137,11 @@ def stop_talking(message: Message) -> bool:
     if type(message.text) != NoneType:
         if message.text.lower() == "стоп" or message.text == "Стоп ❌":
             bot.clear_step_handler_by_chat_id(message.chat.id)
+
+            media_groups[message.from_user.id] = []
+            appliances[message.from_user.id] = []
+            del(media_groups[message.from_user.id], appliances[message.from_user.id])
+            
             if is_member(message):
                 bot.reply_to(message, REPLIES["stop"], reply_markup=create_start_markup(message.from_user.id))
             else:
