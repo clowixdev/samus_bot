@@ -1,1 +1,7 @@
-from . import (all, delete, edit, help, kick, mentions, new, start, view, profile, admin, group, incorrect)
+from . import (
+    photos, apply, all, 
+    delete, edit, help, 
+    kick, mentions, new, 
+    register, view, profile, 
+    admin, group, incorrect
+    )

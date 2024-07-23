@@ -1,7 +1,7 @@
 from telebot.types import Message, PollAnswer, ReplyKeyboardRemove
 from datetime import datetime
 
-from loader import bot, engine, current_polls
+from loader import bot, engine, current_polls, polls
 
 from database.msg_templates import REPLIES
 from database.dbworker import edit_user_rrname, edit_user_critdmg, edit_user_uid, edit_user_platform, edit_user_fractions, edit_user_pawns
@@ -10,7 +10,6 @@ from functions.decorators import chat_required, member_required, spam_checker
 from functions.funcs import stop_talking, check_uid, check_critdmg, check_platform, create_dragon_poll, create_pawns_poll
 from functions.keyboards import create_edit_markup, create_stop_markup, create_start_markup
 
-polls = dict()
 
 @bot.message_handler(commands=["edit"])
 @bot.message_handler(func=lambda message: message.text == "Изменить профиль ✏️")
@@ -23,7 +22,6 @@ def profile_edit_command(message: Message)-> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     bot.reply_to(message, REPLIES["edit_profile"], reply_markup=create_edit_markup())
 
     print("{date} {username} with id {id} called \"/edit\" in {chat_id}".format(date=datetime.now(), username=message.from_user.username, id=message.from_user.id, chat_id=message.chat.id))
@@ -49,7 +47,6 @@ def edit_nickname(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     if stop_talking(message):
         return
     
@@ -80,7 +77,6 @@ def edit_crit(message: Message) -> None:
         message (Message): Object, that contains information of received message
         
     """
-
     if stop_talking(message):
         return
 
@@ -114,7 +110,6 @@ def edit_uid(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     if stop_talking(message):
         return
 
@@ -148,7 +143,6 @@ def edit_platform(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     if stop_talking(message):
         return
 
@@ -160,6 +154,7 @@ def edit_platform(message: Message) -> None:
         bot.reply_to(message, REPLIES["invalid_platform"], reply_markup=create_stop_markup())
         edit_platform_handler(message)
         return
+
 
 @bot.message_handler(func=lambda message: message.text == "Фракции в драконе 🔮")
 @spam_checker
@@ -227,7 +222,6 @@ def edit_polls(pollAnswer: PollAnswer) -> None:
         pollAnswer (PollAnswer): Object, that contains information about catched poll
         poll_question (str): poll question
     """
-
     dragon_poll_question = create_dragon_poll()["question"]
     pawn_poll_question = create_pawns_poll()["question"]
 

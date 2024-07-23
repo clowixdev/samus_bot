@@ -23,7 +23,6 @@ def all_command(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     try:
         user = get_user(message.from_user.id, None, engine)
         templates, templates_amt = gen_templates(user.rr_name)
@@ -43,7 +42,6 @@ def choose_template(message: Message) -> None:
         message (Message): Object, that contains information of received message
         template_id (int): ID of choosen template
     """
-
     if stop_talking(message):
         return
     
@@ -78,7 +76,6 @@ def send_without_storing(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     if stop_talking(message):
         return
     

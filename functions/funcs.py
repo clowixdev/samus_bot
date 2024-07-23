@@ -9,7 +9,10 @@ from database.models import User, Template
 
 from functions.keyboards import create_start_markup, create_unlogged_markup
 
-from loader import bot, engine, ADMINS, DEVS
+from loader import bot, engine, ADMINS, DEVS, media_groups, appliances
+
+alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
+
 
 def have_username(message: Message) -> bool:
     """Function that will define whether user has username or no
@@ -23,6 +26,7 @@ def have_username(message: Message) -> bool:
     if (message.from_user.username == None):
         return False
     return True
+
 
 def is_member(message: Message) -> bool:
     """Function will check if user that sending messages is a member of a clan
@@ -68,7 +72,6 @@ def get_template(message: Message, recall_function: Callable) -> Template:
     Returns:
         Template: model of a template
     """
-
     try:
         message_text = get_number(message.text)
         template_id = int(message_text)
@@ -137,13 +140,18 @@ def stop_talking(message: Message) -> bool:
     if type(message.text) != NoneType:
         if message.text.lower() == "стоп" or message.text == "Стоп ❌":
             bot.clear_step_handler_by_chat_id(message.chat.id)
+
+            media_groups[message.from_user.id] = []
+            appliances[message.from_user.id] = []
+            del(media_groups[message.from_user.id], appliances[message.from_user.id])
+            
             if is_member(message):
                 bot.reply_to(message, REPLIES["stop"], reply_markup=create_start_markup(message.from_user.id))
             else:
                 bot.reply_to(message, REPLIES["stop"], reply_markup=create_unlogged_markup())
             return True
         return False
-    
+
 
 def cut_username(string: str) -> str:
     """This function will find "@username" part of string and return it without "@"
@@ -180,6 +188,7 @@ def check_platform(str: str) -> None:
     if (str.lower() != "android") and (str.lower() != "iphone"):
         raise ValueError
 
+
 def check_uid(uid: int) -> None:
     """Fucntion that will check correctness of inputed UID
 
@@ -204,7 +213,7 @@ def check_critdmg(crit_dmg: int) -> None:
     """
     if (crit_dmg < 1) or (crit_dmg > 6853):
         raise ValueError
-    
+
 
 def create_dragon_poll() -> dict:
     """Function that generates dictionary with all settings for poll
@@ -212,7 +221,6 @@ def create_dragon_poll() -> dict:
     Returns:
         dict: poll settings dictionary
     """
-
     poll = dict()
 
     poll["question"] = REPLIES["add_fractions"]
@@ -235,7 +243,6 @@ def create_pawns_poll() -> dict:
     Returns:
         dict: poll settings dictionary
     """
-
     poll = dict()
 
     poll["question"] = REPLIES["add_pawns"]
@@ -261,7 +268,6 @@ def gen_fractions(user: User) -> str:
     Returns:
         str: message to implement into template
     """
-
     fraction_msg = ""
     if user.forest_fraction:
         fraction_msg += "\nЛесной союз 🍃"
@@ -286,7 +292,6 @@ def gen_pawns(user: User) -> str:
     Returns:
         str: message to implement into template
     """
-
     pawns_msg = ""
     if user.banshee_pawn:
         pawns_msg += "\nБанши 😈"

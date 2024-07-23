@@ -13,6 +13,7 @@ from loader import bot, DEVS, ADMINS, engine, last_message
 
 from functions.keyboards import create_unlogged_markup
 
+
 def chat_required(func: Callable) -> Any:
     """Function decorator that requires called function to be called in chat
 
@@ -111,7 +112,7 @@ def spam_checker(func: Callable) -> Any:
     def wrapper(*args, **kwargs):
         if args[0].from_user.id not in last_message:
             last_message[args[0].from_user.id] = 0
-        if int(time()) - last_message[args[0].from_user.id] < 0.3:
+        if int(time()) - last_message[args[0].from_user.id] < 0.6:
             return
 
         last_message[args[0].from_user.id] = int(time())

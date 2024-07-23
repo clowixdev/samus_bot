@@ -15,13 +15,11 @@ from functions.decorators import member_required, spam_checker
 @spam_checker
 @member_required
 def help_command(message: Message) -> None:
-    
     """Handler that will send to user list of command that he provides
 
     Args:
         message (Message): Object, that contains information of received message
     """        
-
     bot.reply_to(message, REPLIES["help"])
     if is_admin(message.from_user.id):
         if message.from_user.id != message.chat.id:

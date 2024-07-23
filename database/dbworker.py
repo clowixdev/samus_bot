@@ -1,6 +1,6 @@
-from typing import Any, List
+from typing import List, Optional
 
-from sqlalchemy import create_engine, select, insert
+from sqlalchemy import create_engine, select
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -32,7 +32,7 @@ def create_session(engine: Engine) -> Session:
     return Session()
 
 
-def get_user(user_id: int, username:str, engine: Engine) -> User:
+def get_user(user_id: Optional[int], username: Optional[str], engine: Engine) -> User:
     """Function that return a user if he exists in the database
 
     Args:
@@ -50,7 +50,7 @@ def get_user(user_id: int, username:str, engine: Engine) -> User:
             user = session.query(User).filter_by(id=user_id).first()
             if not user:
                 return None
-        else:
+        elif user_id == None:
             user = session.query(User).filter_by(username=username).first()
             if not user:
                 return None
@@ -108,7 +108,6 @@ def delete_user(user_id: int, engine: Engine) -> None:
         user_id (int): ID of user thah defined by Telegram
         engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
     """
-
     session = create_session(engine)
     try:
         user = session.query(User).filter_by(id=user_id).first()

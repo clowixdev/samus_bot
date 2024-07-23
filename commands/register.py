@@ -11,17 +11,16 @@ from functions.keyboards import create_start_markup, create_stop_markup, create_
 from functions.decorators import chat_required, spam_checker
 
 
-@bot.message_handler(commands=["start"])
-@bot.message_handler(func=lambda message: message.text == "Начать ⭐")
+@bot.message_handler(commands=["register"])
+@bot.message_handler(func=lambda message: message.text == "Уже участник 🔍")
 @spam_checker
 @chat_required
-def start_command(message: Message)-> None:
-    """Handler that provides work of "/start" command.
+def register_command(message: Message)-> None:
+    """Handler that provides work of "/register" command.
 
     Args:
         message (Message): Object, that contains information of received message
     """
-    bot.reply_to(message, REPLIES["start"])
     curr_user = get_user(message.from_user.id, message.from_user.username, engine)
     if curr_user == None:
         bot.reply_to(message, REPLIES["authenticate"], reply_markup=create_stop_markup())
@@ -38,7 +37,6 @@ def auth_member(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     if stop_talking(message):
         return
     
@@ -62,7 +60,6 @@ def add_nickname(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     if stop_talking(message):
         return
     
@@ -79,7 +76,6 @@ def add_critdmg(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     if stop_talking(message):
         return
     
@@ -161,6 +157,7 @@ def add_fractions(user_id: int) -> None:
     
     userdata[user_id].insert(0, poll_id)
 
+
 @bot.poll_answer_handler(func=lambda pollAnswer: current_polls[pollAnswer.user.id] == "start")
 def add_poll_data(pollAnswer: PollAnswer) -> None:
     """Handler that will get all the answers and pass data to the next handler
@@ -176,6 +173,7 @@ def add_poll_data(pollAnswer: PollAnswer) -> None:
     else:
         add_event_pawns(pollAnswer.user.id)
 
+
 def add_event_pawns(user_id: int) -> None:
     """Handler that will create a poll and determine players event pawns, then add all stored data to database
 
@@ -190,4 +188,3 @@ def add_event_pawns(user_id: int) -> None:
 
     add_user(userdata[user_id], engine)
     del(userdata[user_id])
-

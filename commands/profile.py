@@ -20,7 +20,6 @@ def profile_command(message: Message)-> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-    
     username = cut_username(message.text)
     if username == None:
         username = message.from_user.username

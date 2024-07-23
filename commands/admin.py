@@ -38,7 +38,6 @@ def stats_command(message: Message)-> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     all_users = gen_users(engine)
     for id, user in enumerate(all_users, 1):
         msg = f"DEV: {id}) @{user.username} - {user.rr_name} - {user.crit_dmg}%"

@@ -3,6 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+
 class User(Base):
     """SQLAlchemy model of user.
 
@@ -26,6 +27,7 @@ class User(Base):
     tesla_pawn = Column(Boolean)
     robot_pawn = Column(Boolean)
     panda_pawn = Column(Boolean)
+
 
 class Template(Base):
     """SQLAlchemy model of template
