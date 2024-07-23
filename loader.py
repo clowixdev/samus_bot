@@ -34,6 +34,7 @@ current_polls = dict()
 userdata = dict()
 appliances = dict()
 media_groups = dict()
+polls = dict()
 
 secret_word = os.environ.get("AUTH_WORD")
 engine = create_db_engine()

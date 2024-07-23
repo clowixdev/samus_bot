@@ -4,13 +4,11 @@ from datetime import datetime
 from database.msg_templates import REPLIES
 from database.dbworker import add_templates
 
-from loader import bot, engine, ADMINS, DEVS, media_groups
+from loader import bot, engine, media_groups
 
-from functions.funcs import stop_talking
+from functions.funcs import stop_talking, alphabet
 from functions.keyboards import create_start_markup, create_stop_markup
 from functions.decorators import chat_required, admin_required, member_required, spam_checker
-
-ALPHABET = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя"
 
 @bot.message_handler(commands=["new"])
 @bot.message_handler(func=lambda message: message.text == "Создать шаблон 📝")
@@ -24,7 +22,6 @@ def new_command(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     bot.reply_to(message, REPLIES["add_template"], reply_markup=create_stop_markup())
     media_groups[message.from_user.id] = []
     bot.register_next_step_handler(message, add_template)
@@ -38,7 +35,6 @@ def add_template(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     if stop_talking(message):
         return
 
@@ -53,7 +49,7 @@ def add_template(message: Message) -> None:
     for word in str.split(user_text):
         if "имя_игрока" in word:
             user_template += "{rr_name}"
-            if word[-1].lower() not in ALPHABET:
+            if word[-1].lower() not in alphabet:
                 user_template += word[-1]
         else:
             user_template += word
@@ -70,9 +66,8 @@ def add_description(message: Message, template: str) -> None:
 
     Args:
         message (Message): Object, that contains information of received message
-        media_group_id
+        template (str): string that contains template created by user
     """
-
     if stop_talking(message):
         return
     

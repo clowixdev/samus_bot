@@ -1,8 +1,14 @@
-from loader import bot, media_groups, DEVS, ADMINS
+from loader import bot, media_groups
 from telebot.types import Message
 
 @bot.message_handler(content_types=["photo"])
 def gather_all_photos_in_media_group(message: Message) -> None:
+    """This handler will gather all the photos that are send in media groups 
+    and sort them by user_id that is defined by telegram. 
+
+    Args:
+        message (Message): Object, that contains information of received message
+    """
 
     if message.from_user.id != message.chat.id:
         return

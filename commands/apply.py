@@ -115,7 +115,6 @@ def appliance_gatherer(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     if stop_talking(message):
         return
 
@@ -167,9 +166,14 @@ def check_appliance_command(message: Message, appliance_message: List) -> None:
 
 @bot.callback_query_handler(func=lambda callback: callback.data[0] == "a")
 def accept_button(callback: CallbackQuery) -> None:
+    """Callback query handler that will handle positive answer from an admins of clan
+
+    Args:
+        callback (CallbackQuery): Object that containts all information about sent data
+    """
     applicant_id = int(callback.data[1:])
     bot.edit_message_text(
-        text=callback.message.text + REPLIES["appliance_accepted"],
+        text=callback.message.text + REPLIES["appliance_accepted"].format(username=callback.message.from_user.username),
         chat_id=admins_chat_id,
         message_id=appliances[applicant_id][1]
         )
@@ -178,13 +182,21 @@ def accept_button(callback: CallbackQuery) -> None:
         link=general_chat_link
     ), reply_markup=create_unlogged_markup())
 
+
 @bot.callback_query_handler(func=lambda callback: callback.data[0] == "d")
 def deny_button(callback: CallbackQuery) -> None:
+    """Callback query handler that will handle negative answer from an admins of clan
+
+    Args:
+        callback (CallbackQuery): Object that containts all information about sent data
+    """
     applicant_id = int(callback.data[1:])
     bot.edit_message_text(
-        text=callback.message.text + REPLIES["appliance_rejected"],
+        text=callback.message.text + REPLIES["appliance_rejected"].format(username=callback.message.from_user.username),
         chat_id=admins_chat_id,
         message_id=appliances[applicant_id][1]
         )
     
     bot.send_message(applicant_id, REPLIES["answer_rejected"], reply_markup=ReplyKeyboardRemove())
+
+    print("{date} {username} with id {id} rejected in {chat_id}".format(date=datetime.now(), username=callback.message.from_user.username, id=callback.message.from_user.id, chat_id=callback.message.chat.id))

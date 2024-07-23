@@ -12,9 +12,13 @@ if __name__ == "__main__":
             bot.polling(non_stop=True, interval=0)
         except (ApiTelegramException, ApiException) as tele_e:
             print("EXCEPTION (TELEGRAM):", datetime.now(), tele_e)
-            sleep(4)
+            sleep(3)
             continue
         except (ConnectionError, ReadTimeout) as req_e:
             print("EXCEPTION: (TIMEOUT)", datetime.now(), req_e)
-            sleep(4)
+            sleep(3)
+            continue
+        except Exception as e:
+            print("EXCEPTION (TELEGRAM 50x):", datetime.now(), e)
+            sleep(3)
             continue

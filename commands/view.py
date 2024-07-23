@@ -23,7 +23,6 @@ def view_command(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     try:
         user = get_user(message.from_user.id, None, engine)
         templates, templates_amt = gen_templates(user.rr_name)
@@ -42,7 +41,6 @@ def view_template(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     if stop_talking(message):
         return
     

@@ -37,7 +37,6 @@ def auth_member(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     if stop_talking(message):
         return
     
@@ -61,7 +60,6 @@ def add_nickname(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     if stop_talking(message):
         return
     
@@ -78,7 +76,6 @@ def add_critdmg(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     if stop_talking(message):
         return
     
@@ -160,6 +157,7 @@ def add_fractions(user_id: int) -> None:
     
     userdata[user_id].insert(0, poll_id)
 
+
 @bot.poll_answer_handler(func=lambda pollAnswer: current_polls[pollAnswer.user.id] == "start")
 def add_poll_data(pollAnswer: PollAnswer) -> None:
     """Handler that will get all the answers and pass data to the next handler
@@ -175,6 +173,7 @@ def add_poll_data(pollAnswer: PollAnswer) -> None:
     else:
         add_event_pawns(pollAnswer.user.id)
 
+
 def add_event_pawns(user_id: int) -> None:
     """Handler that will create a poll and determine players event pawns, then add all stored data to database
 
@@ -189,4 +188,3 @@ def add_event_pawns(user_id: int) -> None:
 
     add_user(userdata[user_id], engine)
     del(userdata[user_id])
-

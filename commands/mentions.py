@@ -26,7 +26,6 @@ def fraction_command(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     bot.reply_to(
         message, 
         REPLIES["before_mention"], 
@@ -70,7 +69,6 @@ def everyone_command(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     bot.reply_to(
         message, 
         REPLIES["before_mention"], 
@@ -105,7 +103,6 @@ def paws_command(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     bot.reply_to(
         message, 
         REPLIES["before_mention"], 

@@ -8,6 +8,7 @@ from functions.keyboards import create_help_markup
 from functions.decorators import spam_checker
 from functions.funcs import stop_talking
 
+
 @spam_checker
 @bot.message_handler(func=lambda _: True)
 def incorrect_command(message: Message) -> None:

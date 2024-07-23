@@ -29,6 +29,7 @@ def create_start_markup(user_id: int) -> ReplyKeyboardMarkup:
 
     return start_markup
 
+
 def create_edit_markup() -> ReplyKeyboardMarkup:
     """Fucntion that will create ReplyKeyboard for "/edit" command and return it
 
@@ -56,6 +57,7 @@ def create_edit_markup() -> ReplyKeyboardMarkup:
     )
 
     return edit_markup
+
 
 def create_all_markup(templates_amt: int) -> ReplyKeyboardMarkup:
     """Fucntion that will create ReplyKeyboard for "/all" command and return it
@@ -128,6 +130,7 @@ def create_del_markup(templates_amt: int) -> ReplyKeyboardMarkup:
     del_markup.add(stop_button)
 
     return del_markup
+
 
 def create_help_markup() -> ReplyKeyboardMarkup:
     """Fucntion that will create ReplyKeyboard for message that misses all the commands and return it
