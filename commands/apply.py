@@ -27,8 +27,7 @@ def start_command(message: Message)-> None:
     bot.reply_to(message, REPLIES["start"])
     curr_user = get_user(message.from_user.id, None, engine)
     if curr_user != None:
-        print("registered")
-        message.text = "/reg"
+        message.text = "/register"
         register_command(message)
         return
     bot.reply_to(message, REPLIES["welcome"], reply_markup=create_welcome_markup())
