@@ -2,6 +2,8 @@ from telebot.types import Message, ReplyKeyboardRemove, InputMediaPhoto, Callbac
 from datetime import datetime
 from typing import List
 
+from time import sleep
+
 from database.msg_templates import REPLIES
 from database.dbworker import get_user
 
@@ -11,7 +13,7 @@ from functions.funcs import stop_talking, have_username
 from functions.keyboards import create_check_markup, create_stop_markup, create_requirements_markup, create_welcome_markup, create_unlogged_markup, create_accept_markup
 from functions.decorators import chat_required, spam_checker
 
-from commands.register import register_command
+from .register import register_command
 
 
 @bot.message_handler(commands=["start"])
@@ -28,6 +30,7 @@ def start_command(message: Message)-> None:
     curr_user = get_user(message.from_user.id, None, engine)
     if curr_user != None:
         message.text = "/register"
+        sleep(0.3)
         register_command(message)
         return
     bot.reply_to(message, REPLIES["welcome"], reply_markup=create_welcome_markup())
