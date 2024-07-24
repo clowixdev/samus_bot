@@ -1,9 +1,11 @@
 import os
 
 from dotenv import load_dotenv
-from telebot import TeleBot
+from telebot import TeleBot, ExceptionHandler
 
 from database.dbworker import create_db_engine
+
+from datetime import datetime
 
 load_dotenv("config.env")
 TOKEN = os.environ.get("BOT_TOKEN")
@@ -37,6 +39,17 @@ appliances = dict()
 media_groups = dict()
 polls = dict()
 
+class CloExceptionHandler(ExceptionHandler):
+    """Handler that will be called if any exception is called during polling
+
+    Args:
+        ExceptionHandler (class): Base class from telebot
+    """ 
+    def handle(self, exception) -> bool:
+        print("EXCEPTION CAUGHT:", datetime.now(), exception)
+
+        return True
+
 secret_word = os.environ.get("AUTH_WORD")
 engine = create_db_engine()
-bot = TeleBot(TOKEN)
+bot = TeleBot(TOKEN, exception_handler=CloExceptionHandler())

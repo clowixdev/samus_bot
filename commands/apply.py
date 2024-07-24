@@ -50,6 +50,13 @@ def apply_command(message: Message)-> None:
     if stop_talking(message):
         return
     
+    curr_user = get_user(message.from_user.id, None, engine)
+    if curr_user != None:
+        message.text = "/register"
+        sleep(0.3)
+        register_command(message)
+        return
+    
     if not have_username(message):
         bot.reply_to(message, REPLIES["add_username"], reply_markup=create_unlogged_markup())
         return
@@ -140,7 +147,13 @@ def create_appliance_bio_command(message: Message) -> None:
     for photo in media_groups[message.from_user.id]:
         appliance_message += [InputMediaPhoto(photo)]
 
-    bot.send_media_group(message.from_user.id, appliance_message)
+    try:
+        bot.send_media_group(message.from_user.id, appliance_message)
+    except Exception as e:
+        bot.reply_to(message, REPLIES["bio_too_long"])
+        bot.reply_to(message, REPLIES["create_appliance_bio"], reply_markup=create_stop_markup())
+        bot.register_next_step_handler(message, create_appliance_bio_command)
+        return
 
     bot.reply_to(message, REPLIES["check_appliance"], reply_markup=create_check_markup())
     bot.register_next_step_handler(message, check_appliance_command, appliance_message)
@@ -182,7 +195,8 @@ def accept_button(callback: CallbackQuery) -> None:
         chat_id=admins_chat_id,
         message_id=appliances[applicant_id][1]
         )
-    
+    del(appliances[applicant_id], media_groups[applicant_id])
+
     bot.send_message(applicant_id, REPLIES["answer_accepted"].format(
         link=general_chat_link
     ), reply_markup=create_unlogged_markup())
@@ -201,7 +215,8 @@ def deny_button(callback: CallbackQuery) -> None:
         chat_id=admins_chat_id,
         message_id=appliances[applicant_id][1]
         )
-    
+    del(appliances[applicant_id], media_groups[applicant_id])
+
     bot.send_message(applicant_id, REPLIES["answer_rejected"], reply_markup=ReplyKeyboardRemove())
 
     print("{date} {username} with id {id} rejected in {chat_id}".format(date=datetime.now(), username=callback.message.from_user.username, id=callback.message.from_user.id, chat_id=callback.message.chat.id))
@@ -220,7 +235,8 @@ def accept_button(callback: CallbackQuery) -> None:
         chat_id=admins_chat_id,
         message_id=appliances[applicant_id][1]
         )
-    
+    del(appliances[applicant_id], media_groups[applicant_id])
+
     bot.send_message(applicant_id, REPLIES["answer_postponed"].format(
         link=academy_chat_link
     ), reply_markup=create_unlogged_markup())
