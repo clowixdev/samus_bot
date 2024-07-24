@@ -58,8 +58,8 @@ def choose_template(message: Message) -> None:
                 bot.send_message(user.id, (template.template).format(rr_name=user.rr_name))
             except Exception as e:
                 print("{date} {username} with id {id} denied receiving message in {chat_id}\n{e}\n".format(
-                    date=datetime.now(), username=message.from_user.username, 
-                    id=message.from_user.id, chat_id=message.chat.id, e=e
+                    date=datetime.now(), username=user.username, 
+                    id=user.id, chat_id=user.id, e=e
                     )
                 )
                 continue
@@ -78,8 +78,8 @@ def choose_template(message: Message) -> None:
                 bot.send_media_group(user.id, media_group)
             except Exception as e:
                 print("{date} {username} with id {id} denied receiving message in {chat_id}\n{e}\n".format(
-                    date=datetime.now(), username=message.from_user.username, 
-                    id=message.from_user.id, chat_id=message.chat.id, e=e)
+                    date=datetime.now(), username=user.username, 
+                    id=user.id, chat_id=user.id, e=e)
                 )
                 continue
     bot.send_message(message.from_user.id, REPLIES["msg_sent"], reply_markup=create_start_markup(message.from_user.id))
@@ -101,8 +101,8 @@ def send_without_storing(message: Message) -> None:
             bot.send_message(user.id, message_text)
         except Exception as e:
             print("{date} {username} with id {id} denied receiving message in {chat_id}\n{e}\n".format(
-                date=datetime.now(), username=message.from_user.username, 
-                id=message.from_user.id, chat_id=message.chat.id, e=e
+                date=datetime.now(), username=user.username, 
+                id=user.id, chat_id=user.id, e=e
                 )
             )
             continue
