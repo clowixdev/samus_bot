@@ -18,7 +18,3 @@ if __name__ == "__main__":
             print("EXCEPTION: (TIMEOUT)", datetime.now(), req_e)
             sleep(3)
             continue
-        except Exception as e:
-            print("EXCEPTION (TELEGRAM 50x):", datetime.now(), e)
-            sleep(3)
-            continue
