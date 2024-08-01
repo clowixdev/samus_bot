@@ -11,10 +11,10 @@ if __name__ == "__main__":
             print(f"START: {datetime.now()} Bot script has been successfully enabled")
             bot.polling(non_stop=True, interval=0)
         except (ApiTelegramException, ApiException) as tele_e:
-            print("EXCEPTION (TELEGRAM):", datetime.now(), tele_e)
+            print("EXC.: (TELEGRAM)", datetime.now(), tele_e)
             sleep(3)
             continue
         except (ConnectionError, ReadTimeout) as req_e:
-            print("EXCEPTION: (TIMEOUT)", datetime.now(), req_e)
+            print("EXC.: (TIMEOUT)", datetime.now(), req_e)
             sleep(3)
             continue

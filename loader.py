@@ -46,7 +46,7 @@ class CloExceptionHandler(ExceptionHandler):
         ExceptionHandler (class): Base class from telebot
     """ 
     def handle(self, exception) -> bool:
-        print("EXCEPTION CAUGHT:", datetime.now(), exception)
+        print("EXC.:", datetime.now(), exception)
 
         return True
 
