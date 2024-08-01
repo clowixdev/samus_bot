@@ -7,9 +7,9 @@ from typing import Callable, Any
 from telebot.types import ReplyKeyboardRemove
 
 from database.msg_templates import REPLIES
-from database.dbworker import gen_users
+from database.dbworker import gen_users, is_blacklisted
 
-from loader import bot, DEVS, ADMINS, engine, last_message
+from loader import bot, DEVS, ADMINS, engine, last_message, blacklist
 
 from functions.keyboards import create_unlogged_markup
 
@@ -110,8 +110,13 @@ def spam_checker(func: Callable) -> Any:
     """
     @wraps(func)
     def wrapper(*args, **kwargs):
+        if is_blacklisted([args[0].from_user.id, args[0].from_user.username], blacklist):
+            print(f"{datetime.now()} ({args[0].from_user.id} - {args[0].from_user.username}) is trying to chat while blacklisted")
+            return
+
         if args[0].from_user.id not in last_message:
             last_message[args[0].from_user.id] = float(0)
+
         if (float(time()) - float(last_message[args[0].from_user.id])) < 0.3:
             return
 

@@ -9,8 +9,8 @@ from functions.decorators import spam_checker
 from functions.funcs import stop_talking
 
 
-@spam_checker
 @bot.message_handler(func=lambda _: True)
+@spam_checker
 def incorrect_command(message: Message) -> None:
     """Handler that provides work with synonims of the word "Hello" 
     to greet the user and notify him that he is doing something wrong.

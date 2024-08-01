@@ -3,7 +3,7 @@ import os
 from dotenv import load_dotenv
 from telebot import TeleBot, ExceptionHandler
 
-from database.dbworker import create_db_engine
+from database.dbworker import create_db_engine, load_blacklist
 
 from datetime import datetime
 
@@ -52,4 +52,5 @@ class CloExceptionHandler(ExceptionHandler):
 
 secret_word = os.environ.get("AUTH_WORD")
 engine = create_db_engine()
+blacklist = load_blacklist()
 bot = TeleBot(TOKEN, exception_handler=CloExceptionHandler())

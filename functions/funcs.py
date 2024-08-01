@@ -325,3 +325,23 @@ def is_admin(user_id: int) -> bool:
         return False
     else:
         return True
+
+
+def cut_id(str: str) -> str:
+    """Function that will cut user's ID from message
+
+    Args:
+        str (str): message with ID
+
+    Returns:
+        str: bare ID
+    """
+    id = ""
+    for char in str:
+        if char in "1234567890":
+            id += char
+
+    if id == "": 
+        return None
+    
+    return id
