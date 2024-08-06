@@ -7,7 +7,7 @@ from time import sleep
 from database.msg_templates import REPLIES
 from database.dbworker import get_user
 
-from loader import bot, appliances, admins_chat_id, general_chat_link, engine, media_groups, academy_chat_link
+from loader import bot, appliances, admins_chat_id, general_chat_link, engine, media_groups
 
 from functions.funcs import stop_talking, have_username
 from functions.keyboards import create_check_markup, create_stop_markup, create_requirements_markup, create_welcome_markup, create_unlogged_markup, create_accept_markup
@@ -220,23 +220,3 @@ def deny_button(callback: CallbackQuery) -> None:
     bot.send_message(applicant_id, REPLIES["answer_rejected"], reply_markup=ReplyKeyboardRemove())
 
     print("{date} {username} with id {id} rejected in {chat_id}".format(date=datetime.now(), username=callback.message.from_user.username, id=callback.message.from_user.id, chat_id=callback.message.chat.id))
-
-
-@bot.callback_query_handler(func=lambda callback: callback.data[0] == "p")
-def accept_button(callback: CallbackQuery) -> None:
-    """Callback query handler that will handle postpone answer from an admins of clan, so player will be sent to academy clan
-
-    Args:
-        callback (CallbackQuery): Object that containts all information about sent data
-    """
-    applicant_id = int(callback.data[1:])
-    bot.edit_message_text(
-        text=callback.message.text + REPLIES["appliance_postponed"].format(username=callback.from_user.username),
-        chat_id=admins_chat_id,
-        message_id=appliances[applicant_id][1]
-        )
-    del(appliances[applicant_id], media_groups[applicant_id])
-
-    bot.send_message(applicant_id, REPLIES["answer_postponed"].format(
-        link=academy_chat_link
-    ), reply_markup=create_unlogged_markup())

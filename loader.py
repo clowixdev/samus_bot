@@ -23,7 +23,6 @@ seventh_off_id = os.environ.get("SEVENTH_OFF_ID")
 main_chat_id = os.environ.get("MAIN_CHAT_ID")
 admins_chat_id = os.environ.get("ADMINS_CHAT_ID")
 general_chat_link = os.environ.get("MAIN_CHAT_LINK")
-academy_chat_link = os.environ.get("ACADEMY_CHAT_LINK")
 
 DEVS = [int(dev_id)]
 ADMINS = [
