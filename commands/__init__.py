@@ -3,5 +3,6 @@ from . import (
     delete, edit, help, 
     kick, mentions, new, 
     register, view, profile, 
-    admin, group, incorrect
+    admin, group, random,
+    incorrect
     )

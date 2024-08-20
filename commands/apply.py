@@ -201,6 +201,9 @@ def accept_button(callback: CallbackQuery) -> None:
         link=general_chat_link
     ), reply_markup=create_unlogged_markup())
 
+    print("{date} {username} with id {id} accepted new member in {chat_id}".format(date=datetime.now(), username=callback.from_user.username, id=callback.from_user.username, chat_id=callback.message.chat.id))
+
+
 
 @bot.callback_query_handler(func=lambda callback: callback.data[0] == "d")
 def deny_button(callback: CallbackQuery) -> None:
@@ -219,4 +222,4 @@ def deny_button(callback: CallbackQuery) -> None:
 
     bot.send_message(applicant_id, REPLIES["answer_rejected"], reply_markup=ReplyKeyboardRemove())
 
-    print("{date} {username} with id {id} rejected in {chat_id}".format(date=datetime.now(), username=callback.message.from_user.username, id=callback.message.from_user.id, chat_id=callback.message.chat.id))
+    print("{date} {username} with id {id} rejected member in {chat_id}".format(date=datetime.now(), username=callback.from_user.username, id=callback.from_user.username, chat_id=callback.message.chat.id))

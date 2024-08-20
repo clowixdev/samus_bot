@@ -5,7 +5,7 @@ from database.dbworker import gen_users, delete_user, blacklist_user, whitelist_
 
 from loader import bot, engine, main_chat_id, ADMINS, DEVS, blacklist
 from functions.decorators import dev_required, spam_checker
-from functions.funcs import cut_username, cut_id
+from functions.funcs import cut_username, cut_numbers
 
 
 @bot.message_handler(commands=["clear"])
@@ -70,7 +70,7 @@ def list_command(message: Message)-> None:
 
     username = cut_username(message.text)
     if username == None:
-        id = cut_id(message.text)
+        id = cut_numbers(message.text)
     else:
         id = None
 
