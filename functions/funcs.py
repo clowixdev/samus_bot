@@ -44,22 +44,43 @@ def is_member(message: Message) -> bool:
     return False
 
 
-def get_number(str: str) -> str:
-    """Function that will separate number from other text
+def check_border(number: str) -> int:
+    """Function that will check number correctness
 
     Args:
-        str (str): incoming message
+        number (str): given number
 
     Returns:
-        str: cleared message
+        int: clean number
     """
-    cleared_str = ""
+    try:
+        result = int(number)
+        if result < 0:
+            raise ValueError
+    except ValueError as e:
+        return None
 
+    return result
+
+
+def cut_numbers(str: str) -> str:
+    """Function that will cut any numbers from message
+
+    Args:
+        str (str): message with numbers
+
+    Returns:
+        str: bare number
+    """
+    id = ""
     for char in str:
-        if char in '1234567890':
-            cleared_str += char
+        if char in "1234567890":
+            id += char
 
-    return cleared_str
+    if id == "": 
+        return None
+    
+    return id
 
 
 def get_template(message: Message, recall_function: Callable) -> Template:
@@ -73,7 +94,7 @@ def get_template(message: Message, recall_function: Callable) -> Template:
         Template: model of a template
     """
     try:
-        message_text = get_number(message.text)
+        message_text = cut_numbers(message.text)
         template_id = int(message_text)
     except ValueError as e:
         bot.reply_to(message, REPLIES["invalid_key"])
@@ -325,23 +346,3 @@ def is_admin(user_id: int) -> bool:
         return False
     else:
         return True
-
-
-def cut_id(str: str) -> str:
-    """Function that will cut user's ID from message
-
-    Args:
-        str (str): message with ID
-
-    Returns:
-        str: bare ID
-    """
-    id = ""
-    for char in str:
-        if char in "1234567890":
-            id += char
-
-    if id == "": 
-        return None
-    
-    return id
