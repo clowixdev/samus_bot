@@ -1,6 +1,8 @@
-from typing import Any, List
+from typing import List, Optional, Union
 
-from sqlalchemy import create_engine, select, insert
+from datetime import datetime
+
+from sqlalchemy import create_engine, select
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -32,7 +34,7 @@ def create_session(engine: Engine) -> Session:
     return Session()
 
 
-def get_user(user_id: int, username:str, engine: Engine) -> User:
+def get_user(user_id: Optional[int], username: Optional[str], engine: Engine) -> User:
     """Function that return a user if he exists in the database
 
     Args:
@@ -50,7 +52,7 @@ def get_user(user_id: int, username:str, engine: Engine) -> User:
             user = session.query(User).filter_by(id=user_id).first()
             if not user:
                 return None
-        else:
+        elif user_id == None:
             user = session.query(User).filter_by(username=username).first()
             if not user:
                 return None
@@ -108,7 +110,6 @@ def delete_user(user_id: int, engine: Engine) -> None:
         user_id (int): ID of user thah defined by Telegram
         engine (Engine): An _engine.Engine object is instantiated publicly using the ~sqlalchemy.create_engine function.
     """
-
     session = create_session(engine)
     try:
         user = session.query(User).filter_by(id=user_id).first()
@@ -510,3 +511,85 @@ def update_username(user_id: int, new_username: str, engine: Engine) -> None:
         session.rollback()
     finally:
         session.close()
+
+
+def load_blacklist() -> list:
+    """Function that will load blacklist and return an list
+
+    Returns:
+        list: blacklist
+    """
+    try:
+        with open("database/blacklist.txt", "a+") as file:
+            print(f"{datetime.now()} DEV: blacklist opened succesfully")
+    except Exception as e:
+        with open("database/blacklist.txt", "w") as file:
+            print(f"{datetime.now()} DEV: blacklist opening FAILED, creating new one")
+    finally:
+        print(f"{datetime.now()} DEV: file succesfully initialized")
+
+    with open("database/blacklist.txt", "a+") as file:
+        file.seek(0)
+        blacklist_raw = file.readlines()
+
+    blacklist = [entity[:-1].strip() for entity in blacklist_raw]
+    print(f"{datetime.now()} DEV: current blacklist: {blacklist}")
+    
+    return blacklist
+
+
+def blacklist_user(entity: str, blacklist: list):
+    """Function that will add user to blacklist
+
+    Args:
+        entity (str): identificator of user
+        blacklist (list): list of blocked users that is created on startup
+    """
+    blacklist.append(entity)
+
+    with open("database/blacklist.txt", "a+") as file:
+        file.write(entity + "\n")
+        
+    print(f"{datetime.now()} DEV: added {entity} to blacklist.\n{' ' * 32}Current blacklist: {blacklist}")
+
+
+def whitelist_user(entity: str, blacklist: list) -> bool:
+    """Function that will delete user from blacklist
+
+    Args:
+        entity (Union[int, str]): identificator of user
+        blacklist (list): list of blocked users that is created on startup
+
+    Returns:
+        bool: True if user is found and whitelisted and Flase if not
+    """
+    found = False
+    for blacklisted_user in blacklist:
+        if blacklisted_user == entity:
+            found = True
+            blacklist.remove(entity)
+
+    if found:
+        with open("database/blacklist.txt", "w") as file:
+            for blacklisted_user in blacklist:
+                file.write(blacklisted_user + "\n")
+    else:
+        return False
+        
+    print(f"{datetime.now()} DEV: deleted {entity} from blacklist.\n{' ' * 32}Current blacklist: {blacklist}")
+    return True
+
+
+def is_blacklisted(data: list, blacklist: list) -> bool:
+    """Function that will check, if user is blacklisted
+
+    Args:
+        data (list): List with probable user's data [id, username]
+        blacklist (list): list of blocked users that is created on startup
+
+    Returns:
+        blacklisted: True if user is blacklisted
+    """
+    if (data[0] in blacklist) or (data[1] in blacklist):
+        return True
+    return False

@@ -6,9 +6,11 @@ from loader import bot
 
 from functions.keyboards import create_help_markup
 from functions.decorators import spam_checker
+from functions.funcs import stop_talking
 
-@spam_checker
+
 @bot.message_handler(func=lambda _: True)
+@spam_checker
 def incorrect_command(message: Message) -> None:
     """Handler that provides work with synonims of the word "Hello" 
     to greet the user and notify him that he is doing something wrong.
@@ -16,5 +18,8 @@ def incorrect_command(message: Message) -> None:
     Args:
         message (Message): Object, that contains information of received message
     """
+    if message.from_user.id == message.chat.id and stop_talking(message):
+        return
+
     if message.from_user.id == message.chat.id:
         bot.reply_to(message, REPLIES["incorrect"], reply_markup=create_help_markup())

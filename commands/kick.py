@@ -19,7 +19,6 @@ def kick_command(message: Message)-> None:
     Args:
         message (Message): Object, that contains information of received message
     """
-
     username = cut_username(message.text)
     user_to_kick = get_user(None, username, engine)
 

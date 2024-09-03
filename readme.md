@@ -13,6 +13,8 @@ This telegram bot will be used as notifier for clan members. Also, this bot can 
     8. register check when entering platform - DONE
     10. telegram api error about runtime fix - DONE
     11. fix no @username users - DONE
+    12. try/except around send_message in case bot is blocked - DONE
+    13. try/except around send_media_group in case caption is too long - DONE
 
 ## TODO:
     1. Add inline keyboards - DONE
