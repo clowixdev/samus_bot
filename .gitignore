@@ -5,3 +5,4 @@ __pycache__/
 database/database.db
 *.jpg
 *.bat
+*.env
