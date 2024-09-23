@@ -7,7 +7,7 @@ from database.dbworker import create_db_engine, load_blacklist
 
 from datetime import datetime
 
-load_dotenv("config.env")
+load_dotenv("tokens.env")
 TOKEN = os.environ.get("BOT_TOKEN")
 
 dev_id = os.environ.get("DEV_ID")
