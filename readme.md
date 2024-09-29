@@ -1,8 +1,18 @@
 # Samus rush royale Telegram bot
 
-This telegram bot will be used as notifier for clan members. Also, this bot can be used as mentioner and informator. You can check strategies and decks for different modifiers and get other useful information. All clan members have to authenticate through secret word, that will be known only by devs, so no one can enter this bot. 
+This telegram bot will be used as notifier for clan members. Also, this bot can be used as mentioner and informator. You can check strategies and decks for different modifiers and get other useful information. All clan members have to authenticate through secret word, that will be known only by devs, so no one can enter this bot.
+
+## What to change for every new clan
+
+1. telegram bot token
+2. telegram leader id's
+3. requirements for appliance
+4. clan name in tokens.env
+5. msg_templates.py - delete names
+6. clan chat link
 
 ## Fixes to do:
+
     1. Work out correct behavior while deleting templates - DONE
     2. Fix behaviour while generating empty templates - DONE
     3. If user is not a member, ask him to auth or drop dialogue - DONE
@@ -17,6 +27,7 @@ This telegram bot will be used as notifier for clan members. Also, this bot can 
     13. try/except around send_media_group in case caption is too long - DONE
 
 ## TODO:
+
     1. Add inline keyboards - DONE
     2. Add "/view" command to view added templates (show only first 20 symbols of generated template) - DONE
     3. Add player "profile" that will be filled during registration (fractions, crit dmg) - DONE
@@ -27,7 +38,8 @@ This telegram bot will be used as notifier for clan members. Also, this bot can 
     8. Add pawns mention (banshee, tesla, robot, panda) - DONE
     9. Add ability to edit profile - DONE
     10. Add "Hello" message when someone is entering main chat - DONE 
-    11. Add base commands for Dev-only (reboot, stats, adduser) - IN PROCCES
-    12. Add /bug command, that will ease bug-report process
-    13. Add strategies for different modifiers
-    14. Add some info about items, pawns and etc...
+    11. Change everything "Samus Helper" to "RRClan Helper"
+    12. Add base commands for Dev-only (reboot, stats, adduser) - IN PROCCES
+    13. Add /bug command, that will ease bug-report process
+    14. Add strategies for different modifiers
+    15. Add some info about items, pawns and etc...
